@@ -74,6 +74,16 @@
                                 $body.children().hide();
                                 $body.prepend( $content );
 
+                                // Setting up margins, padding, border (identical for all scenarios)
+                                $html.margin( 64 )
+                                    .border( 32 )
+                                    .padding( 16 );
+                                $body.margin( 8 )
+                                    .border( 4 )
+                                    .padding( 2 );
+                                $content.border( 1 );
+
+                                // Setting up the scenario
                                 htmlOverflowSetup( $html );
                                 bodyOverflowSetup( $body );
                                 htmlSetup( $html );
@@ -85,6 +95,9 @@
                             } );
 
                             afterAll( function () {
+
+                                $html[0].style.cssText = "";
+                                $body[0].style.cssText = "";
 
                                 $content.remove();
                                 $body.children().show();

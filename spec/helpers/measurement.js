@@ -1,7 +1,10 @@
+var browserBehaviour;
+
 function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly ) {
 
     var rightWindowContentEdge, bottomWindowContentEdge,
         htmlRect, bodyRect, contentRect,
+        bodyBottomEdge,
 
         html = $html[0],
         body = $body[0],
@@ -11,9 +14,9 @@ function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly )
         _window = _document.defaultView || _document.parentWindow,
         $window = $( _window ),
 
-        htmlMarginBottom = parseInt( $html.css( "marginBottom" ) ),
-        bodyMarginBottom = parseInt( $body.css( "marginBottom" ) ),
-        contentMarginBottom = parseInt( $content.css( "marginBottom" ) ),
+        htmlMarginBottom = parseFloat( $html.css( "marginBottom" ) ),
+        bodyMarginBottom = parseFloat( $body.css( "marginBottom" ) ),
+        contentMarginBottom = parseFloat( $content.css( "marginBottom" ) ),
 
         bodyPosition = $body.css( "position" ),
         contentPosition = $content.css( "position" ),
@@ -23,6 +26,9 @@ function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly )
             $body.css( [ "overflow", "overflowX", "overflowY" ] )
         );
 
+    // Make sure we have tested the behaviour of the browser
+    if ( browserBehaviour === undefined ) browserBehaviour = testBrowserBehaviour( _document );
+
     // Make sure everything is scrolled to the top before taking measurements
     html.scrollTop = body.scrollTop = content.scrollTop = 0;
 
@@ -31,6 +37,27 @@ function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly )
     htmlRect = getBoundingClientRectCompat( document.documentElement );
     bodyRect = getBoundingClientRectCompat( body );
     contentRect = getBoundingClientRectCompat( content );
+
+    // First, we handle the special cases for the bottom edge of the body. Generally, that edge is the bottom margin
+    // edge. In some browsers, though, special conditions apply:
+    //
+    // - If the body is positioned absolutely, some browsers collapse the bottom margin, and the bottom edge is at the
+    //   border.
+    // - If the body is positioned relatively, some browsers do not reposition the bottom margin. The margin creates
+    //   space in its initial position. The bottom edge of the body is either at its unpositioned margin edge, or at the
+    //   border edge of the repositioned body - whichever is further down.
+    if ( bodyPosition === "absolute" && ! browserBehaviour.keepsAbsPositionedBottomMargin ) {
+        bodyBottomEdge = bodyRect.bottom;
+    } else if ( bodyPosition === "relative" && ! browserBehaviour.keepsRelPositionedBottomMargin ) {
+        bodyBottomEdge = Math.max(
+            bodyRect.bottom,
+            bodyRect.bottom - parseFloat( $body.css( "top" ) ) + bodyMarginBottom
+        );
+    } else {
+        // Normal behaviour
+        bodyBottomEdge = bodyRect.bottom + bodyMarginBottom;
+    }
+
 
     // Horizontal dimension
     if ( appliedOverflows.window.overflowHiddenX && reachableAreaOnly ) {
@@ -92,9 +119,9 @@ function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly )
                 // Bottom body content edge
                 contentRect.bottom + contentMarginBottom,
                 // Bottom edge of body element
-                bodyRect.bottom + bodyMarginBottom,
+                bodyBottomEdge,
                 // Bottom edge of the html element (document element)
-                htmlRect.bottom + htmlMarginBottom
+                browserBehaviour.keepsHtmlBottomMargin ? htmlRect.bottom + htmlMarginBottom : htmlRect.bottom
             );
 
         } else {
@@ -102,9 +129,9 @@ function measureDocumentScrollSize ( $html, $body, $content, reachableAreaOnly )
             // Overflowing content is hidden outside the limits of the body, or tucked away in a scrollable area - ignore
             bottomWindowContentEdge = Math.max(
                 // Bottom body edge
-                bodyRect.bottom + bodyMarginBottom,
+                bodyBottomEdge,
                 // Bottom edge of the html element (document element)
-                htmlRect.bottom + htmlMarginBottom
+                browserBehaviour.keepsHtmlBottomMargin ? htmlRect.bottom + htmlMarginBottom : htmlRect.bottom
             );
 
         }
@@ -287,6 +314,109 @@ function getAppliedViewportOverflows ( documentElementProps, bodyProps ) {
     consolidated.body = getAppliedOverflows( consolidated.body, true );
 
     return consolidated;
+}
+
+/**
+ * Tests the browser behaviour with regard to bottom margins and returns the results in an object.
+ *
+ * @param   {Document} document
+ * @returns {{ keepsHtmlBottomMargin: boolean, keepsAbsPositionedBottomMargin: boolean, keepsRelPositionedBottomMargin: boolean }}
+ */
+function testBrowserBehaviour ( document ) {
+    var bottomMarginIsPreservedForPositionedElement = testBottomMarginIsPreservedForPositionedElement();
+
+    return {
+        keepsHtmlBottomMargin: testHtmlBottomMarginIsPreserved( document ),
+        keepsAbsPositionedBottomMargin: bottomMarginIsPreservedForPositionedElement.absolute,
+        keepsRelPositionedBottomMargin: bottomMarginIsPreservedForPositionedElement.relative
+    };
+}
+
+/**
+ * Tests if the bottom margin of the documentElement is preserved when the element is larger than the viewport, or if
+ * the bottom margin collapses. Returns true if preserved.
+ *
+ * Chrome and friends preserve that margin, FF and IE collapse it.
+ *
+ * NB For the test, we manipulate the bottom margin of a reasonably large document (larger than the viewport) and
+ * observe the response of the scrollHeight in the documentElement and body. If either reflects the change, the bottom
+ * margin is honoured.
+ *
+ * @param   {Document} document
+ * @returns {boolean}
+ */
+function testHtmlBottomMarginIsPreserved ( document ) {
+
+    var ddEScrollHeightNoMargin, bodyScrollHeightNoMargin, responds,
+        ddE = document.documentElement,
+        body = document.body,
+        ddEStyle = ddE.style,
+        initialHeight = ddEStyle.height,
+        initialMarginBottom = ddEStyle.marginBottom;
+
+    // Configuration without bottom margin
+    ddEStyle.height = "10000px";
+    ddEStyle.marginBottom = "0px";
+
+    ddEScrollHeightNoMargin = ddE.scrollHeight;
+    bodyScrollHeightNoMargin = body.scrollHeight;
+
+    // Configuration with bottom margin, comparison
+    ddEStyle.marginBottom = "100px";
+
+    responds = body.scrollHeight > bodyScrollHeightNoMargin || ddE.scrollHeight > ddEScrollHeightNoMargin;
+
+    // Restoring the documentElement
+    ddEStyle.height = initialHeight;
+    ddEStyle.marginBottom = initialMarginBottom;
+
+    return responds;
+
+}
+
+/**
+ * Tests if the bottom margin of an element is preserved when it is positioned absolutely and is larger than its
+ * (scrollable) container, or if the bottom margin collapses in that case.
+ *
+ * Also tests if the bottom margin is preserved when the element is positioned relatively. The mechanics of it are a
+ * bit more involved. The bottom margin does not in fact collapse. In some browsers, it does not get repositioned
+ * along with the element, but rather stays in place (FF). In other browsers (Chrome et al), it is repositioned.
+ *
+ * Returns an object with the respective behaviours, each true if the bottom margin in preserved.
+ *
+ * @returns {{absolute: boolean, relative: boolean}}
+ */
+function testBottomMarginIsPreservedForPositionedElement () {
+
+    var containerScrollHeightNoMargin, respondsAbsolute, respondsRelative,
+        defaultStyle = "position: absolute; padding: 0px; border: none; margin: 0px;",
+        element = document.createElement( "div" ),
+        container = document.createElement( "div" ),
+        body = document.body;
+
+    // Configuration without bottom margin
+    container.style.cssText = defaultStyle + " width: 100px; height: 100px; overflow: auto; top: -500px; left: -500px;";
+    element.style.cssText = defaultStyle + " width: 150px; height: 150px; top: 50px; left: 50px;";
+
+    container.appendChild( element );
+    body.appendChild( container );
+
+    containerScrollHeightNoMargin = container.scrollHeight;
+
+    element.style.marginBottom = "10px";
+
+    respondsAbsolute = container.scrollHeight > containerScrollHeightNoMargin;
+
+    element.style.position = "relative";
+    respondsRelative = container.scrollHeight > containerScrollHeightNoMargin;
+
+    body.removeChild( container );
+
+    return {
+        absolute: respondsAbsolute,
+        relative: respondsRelative
+    };
+
 }
 
 /**
