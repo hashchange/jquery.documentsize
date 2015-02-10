@@ -2,6 +2,8 @@
 
 Detects the real width and height of the document.
 
+Not yet quite ready. Pretty much an alpha release, stay clear for now.
+
 ## Dependencies and setup
 
 ## Components
