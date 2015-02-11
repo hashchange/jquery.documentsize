@@ -301,13 +301,14 @@ function getAppliedViewportOverflows ( documentElementProps, bodyProps ) {
 }
 
 /**
- * Handles the special cases when determining the bottom edge of an element, based on the results of the relevant
- * browser behaviour test (either the one for the documentElement, or the one for all other elements).
+ * Handles the special cases when determining the bottom edge of the body or the documentElement, based on the results
+ * of the relevant browser behaviour test (either the one for the documentElement, or the one for all other elements).
  *
  * The following rules apply:
  *
  * - Generally, the edge is the bottom margin edge.
- * - Some browsers always collapse the bottom margin, so the edge is the bottom border edge.
+ * - Some browsers always collapse the bottom margin when it pushes against the document boundary, so the edge of the
+ *   element is the bottom border edge.
  * - Some browsers collapse the bottom margin if the element is positioned absolutely.
  * - Some browsers collapse the bottom margin if the element is positioned relatively.
  * - If the element is positioned relatively, some browsers keep the bottom margin intact, but do not reposition it.
@@ -317,7 +318,7 @@ function getAppliedViewportOverflows ( documentElementProps, bodyProps ) {
  * NB The function uses the ClientRect of the element, which is relative to the window. The calculation is only
  * correct if the container (usually, the window) is NOT scrolled down (scrollTop = 0).
  *
- * @param   {jQuery}           $element
+ * @param   {jQuery}           $element             body or documentElement
  * @param   {ClientRect}       elementRect
  * @param   {string}           elementPosition
  * @param   {number}           elementMarginBottom
@@ -328,7 +329,7 @@ function getBottomEdge ( $element, elementRect, elementPosition, elementMarginBo
 
     var bottomEdge,
 
-        noMargin = ( elementPosition === "static" && !browserBehaviour.static.keepsBottomMargin ) ||
+        noMargin = ( elementPosition === "static" && !browserBehaviour.static.pushingDocumentEdge.keepsBottomMargin ) ||
                    ( elementPosition === "absolute" && !browserBehaviour.absolute.keepsBottomMargin ) ||
                    // Doesn't even keep the margin if the element stays in its original place, margin always collapses.
                    ( elementPosition === "relative" && !browserBehaviour.relative.inPlace.keepsBottomMargin );
@@ -364,25 +365,19 @@ function getBottomEdge ( $element, elementRect, elementPosition, elementMarginBo
  * @returns {{ documentElement: BrowserBehaviour, element: BrowserBehaviour }}
  */
 function testBrowserBehaviour () {
-    var iframeStyles = "position: absolute; top: -5000px; left: -5000px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none;",
-        iframe = createIframe( {
-            elementStyles: iframeStyles
-        } ),
-        _document = iframe.contentDocument,
-        behaviour = {
-            documentElement: testHtmlKeepsBottomMargin( _document ),
-            element: testElementKeepsBottomMargin( _document )
+    var behaviour = {
+            documentElement: testHtmlKeepsBottomMargin(),
+            element: testElementKeepsBottomMargin()
         };
-
-    document.body.removeChild( iframe );
 
     log(
         "Browser features, as detected:\n" +
-        'documentElement, position: "static". Bottom margin is preserved: ' + behaviour.documentElement.static.keepsBottomMargin + "\n" +
+        'documentElement, position: "static". Bottom margin is preserved: ' + behaviour.documentElement.static.pushingDocumentEdge.keepsBottomMargin + "\n" +
         'documentElement, position: "absolute". Bottom margin is preserved: ' + behaviour.documentElement.absolute.keepsBottomMargin + "\n" +
         'documentElement, position: "relative", left in its original position. Bottom margin is preserved: ' + behaviour.documentElement.relative.inPlace.keepsBottomMargin + "\n" +
         'documentElement, position: "relative", shifted downwards from its original position. Bottom margin is preserved (moves with the element): ' + behaviour.documentElement.relative.shifted.keepsBottomMargin + "\n\n" +
-        'Normal HTML element (including body), position: "static". Bottom margin is preserved: ' + behaviour.element.static.keepsBottomMargin + "\n" +
+        'Normal HTML element (including body), position: "static". Bottom margin is preserved: ' + behaviour.element.static.pushingElementEdge.keepsBottomMargin + "\n" +
+        'Normal HTML element (including body), position: "static", pushing against the bottom document edge. Bottom margin is preserved: ' + behaviour.element.static.pushingDocumentEdge.keepsBottomMargin + "\n" +
         'Normal HTML element (including body), position: "absolute". Bottom margin is preserved: ' + behaviour.element.absolute.keepsBottomMargin + "\n" +
         'Normal HTML element (including body), position: "relative", left in its original position. Bottom margin is preserved: ' + behaviour.element.relative.inPlace.keepsBottomMargin + "\n" +
         'Normal HTML element (including body), position: "relative", shifted downwards from its original position. Bottom margin is preserved (moves with the element): ' + behaviour.element.relative.shifted.keepsBottomMargin
@@ -419,17 +414,20 @@ function testBrowserBehaviour () {
  * observe the response of the scrollHeight in the documentElement and body. If either reflects the change, the bottom
  * margin is honoured.
  *
- * @param   {Document} document  a safe document to mess with (iframe) - won't be restored to its original state
  * @returns {BrowserBehaviour}
  */
-function testHtmlKeepsBottomMargin ( document ) {
+function testHtmlKeepsBottomMargin () {
 
     var ddEScrollHeightNoMargin, bodyScrollHeightNoMargin,
         ddEScrollHeightWithMargin, bodyScrollHeightWithMargin,
         respondsStatic, respondsAbsolute, respondsRelativeInPlace, respondsRelativeShifted,
 
-        ddE = document.documentElement,
-        body = document.body,
+        iframe = createIframe( {
+            elementStyles: "position: absolute; top: -5000px; left: -5000px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none;"
+        } ),
+        _document = iframe.contentDocument,
+        ddE = _document.documentElement,
+        body = _document.body,
         ddEStyle = ddE.style;
 
     // Configuration without bottom margin
@@ -467,8 +465,14 @@ function testHtmlKeepsBottomMargin ( document ) {
 
     respondsRelativeShifted = body.scrollHeight < bodyScrollHeightWithMargin || ddE.scrollHeight < ddEScrollHeightWithMargin;
 
+    // Remove iframe
+    document.body.removeChild( iframe );
+
     return {
-        static: { keepsBottomMargin: respondsStatic },
+        static: {
+            pushingElementEdge: { keepsBottomMargin: respondsStatic },      // doesn't really apply, always pushes the document edge
+            pushingDocumentEdge: { keepsBottomMargin: respondsStatic }
+        },
         absolute: { keepsBottomMargin: respondsAbsolute },
         relative: {
             inPlace: { keepsBottomMargin: respondsRelativeInPlace },
@@ -489,7 +493,10 @@ function testHtmlKeepsBottomMargin ( document ) {
  * respective behaviours, each true if the bottom margin in preserved.
  *
  * - Tests if the bottom margin of an element is preserved when the element is larger than its (scrollable) container,
- *   or if the bottom margin collapses.
+ *   or if the bottom margin collapses in that case.
+ *
+ * - Tests if the bottom margin of an element is preserved when the element overflows its container and all other parent
+ *   elements, and pushes against the bottom edge of the document. (Safari collapses it.)
  *
  * - Tests if the bottom margin of an element is preserved when it is positioned absolutely. (FF collapses it.)
  *
@@ -503,21 +510,31 @@ function testHtmlKeepsBottomMargin ( document ) {
  *   element is repositioned. The bottom margin is left behind, and it continues to take up space in the document at its
  *   original location.
  *
- * @param   {Document} document
  * @returns {BrowserBehaviour}
  */
-function testElementKeepsBottomMargin ( document ) {
+function testElementKeepsBottomMargin () {
 
     var containerScrollHeightNoMargin, containerScrollHeightWithMargin,
-        respondsStatic, respondsAbsolute, respondsRelativeInPlace, respondsRelativeShifted,
+        bodyScrollHeightNoMargin, ddEScrollHeightNoMargin,
+        respondsStatic, respondsStaticPushingDocument, respondsAbsolute, respondsRelativeInPlace, respondsRelativeShifted,
+
+        iframe = createIframe( {
+            elementStyles: "position: absolute; top: -5000px; left: -5000px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none;"
+        } ),
+        _document = iframe.contentDocument,
+
         defaultStyle = "padding: 0px; border: none; margin: 0px;",
-        element = document.createElement( "div" ),
-        container = document.createElement( "div" ),
-        body = document.body;
+        element = _document.createElement( "div" ),
+        container = _document.createElement( "div" ),
+        body = _document.body,
+        ddE = _document.documentElement,
+
+        elementStyle = element.style,
+        containerStyle = container.style;
 
     // Configuration without bottom margin
-    container.style.cssText = defaultStyle + " width: 100px; height: 100px; overflow: auto; position: absolute; top: -500px; left: -500px;";
-    element.style.cssText = defaultStyle + " width: 150px; height: 150px;";
+    containerStyle.cssText = defaultStyle + " width: 100px; height: 100px; overflow: auto; position: absolute; top: 0px; left: 0px;";
+    elementStyle.cssText = defaultStyle + " width: 150px; height: 150px;";
 
     container.appendChild( element );
     body.appendChild( container );
@@ -525,31 +542,51 @@ function testElementKeepsBottomMargin ( document ) {
     containerScrollHeightNoMargin = container.scrollHeight;
 
     // Configuration with bottom margin, for comparison
-    element.style.marginBottom = "10px";
+    elementStyle.marginBottom = "10px";
 
     respondsStatic = container.scrollHeight > containerScrollHeightNoMargin;
 
     // Switch to absolute positioning
-    element.style.position = "absolute";
+    elementStyle.position = "absolute";
     respondsAbsolute = container.scrollHeight > containerScrollHeightNoMargin;
 
     // Switch to relative positioning
-    element.style.position = "relative";
+    elementStyle.position = "relative";
     respondsRelativeInPlace = container.scrollHeight > containerScrollHeightNoMargin;
 
     // Measure the scroll height when the element is shifted downwards, and has a margin
-    element.style.top = "100px";
+    elementStyle.top = "100px";
     containerScrollHeightWithMargin = container.scrollHeight;
 
     // Removed the margin in shifted position, compare
-    element.style.marginBottom = "0px";
+    elementStyle.marginBottom = "0px";
 
     respondsRelativeShifted = container.scrollHeight < containerScrollHeightWithMargin;
 
-    body.removeChild( container );
+    // Second run with static positioning, but pushing the bottom document edge this time
+    elementStyle.position = "static";
+    elementStyle.top = "0px";
+    elementStyle.height = ddE.clientHeight + 1000 + "px";   // window height + 1000px;
+
+    containerStyle.position = "static";
+    containerStyle.overflow = "visible";
+    body.style.height = "100px";
+
+    containerScrollHeightNoMargin = container.scrollHeight;
+    bodyScrollHeightNoMargin = body.scrollHeight;
+    ddEScrollHeightNoMargin = ddE.scrollHeight;
+
+    elementStyle.marginBottom = "10px";
+    respondsStaticPushingDocument = container.scrollHeight > containerScrollHeightNoMargin || body.scrollHeight > bodyScrollHeightNoMargin || ddE.scrollHeight > ddEScrollHeightNoMargin;
+
+    // Remove iframe
+    document.body.removeChild( iframe );
 
     return {
-        static: { keepsBottomMargin: respondsStatic },
+        static: {
+            pushingElementEdge: { keepsBottomMargin: respondsStatic },
+            pushingDocumentEdge: { keepsBottomMargin: respondsStaticPushingDocument }
+        },
         absolute: { keepsBottomMargin: respondsAbsolute },
         relative: {
             inPlace: { keepsBottomMargin: respondsRelativeInPlace },
@@ -580,7 +617,10 @@ function testElementKeepsBottomMargin ( document ) {
  * @type  {Object}
  *
  * @property {Object}  static
- * @property {boolean} static.keepsBottomMargin
+ * @property {Object}  static.pushingDocumentEdge
+ * @property {boolean} static.pushingDocumentEdge.keepsBottomMargin
+ * @property {Object}  static.pushingElementEdge
+ * @property {boolean} static.pushingElementEdge.keepsBottomMargin
  * @property {Object}  absolute
  * @property {boolean} absolute.keepsBottomMargin
  * @property {Object}  relative
