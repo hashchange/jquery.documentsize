@@ -31,7 +31,13 @@ Your test and build environment is ready now. If you want to test against specif
 
 ### Running tests, creating a new build
 
-The test tool chain: [Grunt][] (task runner), [Karma][] (test runner), [Mocha][] (test framework), [Chai][] (assertion library), [Sinon][] (mocking framework). The good news: you don't need to worry about any of this.
+#### Considerations for testing
+
+To run the tests on on remote clients (mobile devices), start a web server with `grunt interactive` and visit `http://[your-host-ip]:9400/web-mocha/` with the client browser. Running the tests in the browser like this takes a _long_ time, so it makes sense to disable the power-save/sleep/auto-lock timeout on the mobile device. 
+
+#### Tool chain and commands
+
+The test tool chain: [Grunt][] (task runner), [Karma][] (test runner), [Jasmine][] (test framework). But you don't really need to worry about any of this.
 
 A handful of commands manage everything for you:
 
@@ -61,7 +67,7 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 MIT.
 
-Copyright (c) 2014 Michael Heim.
+Copyright (c) 2015 Michael Heim.
 
 [Backbone]: http://backbonejs.org/ "Backbone.js"
 [Node.js]: http://nodejs.org/ "Node.js"
@@ -69,7 +75,5 @@ Copyright (c) 2014 Michael Heim.
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
 [Karma]: http://karma-runner.github.io/ "Karma - Spectacular Test Runner for Javascript"
-[Mocha]: http://visionmedia.github.io/mocha/ "Mocha - the fun, simple, flexible JavaScript test framework"
-[Chai]: http://chaijs.com/ "Chai: a BDD / TDD assertion library"
-[Sinon]: http://sinonjs.org/ "Sinon.JS - Versatile standalone test spies, stubs and mocks for JavaScript"
+[Jasmine]: http://jasmine.github.io/ "Jasmine: Behavior-Driven JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
