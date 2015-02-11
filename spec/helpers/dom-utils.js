@@ -70,9 +70,16 @@ function createChildWindow ( readyDfd, size ) {
  * Creates an iframe with an HTML5 doctype and UTF-8 encoding. Appends it to the body, or to another specified parent
  * element. Alternatively, the iframe can be prepended to the parent.
  *
+ * The iframe element can be styled as it is created, before it is added to the DOM, e.g. to keep it out of view.
+ * Likewise, styles can be written into the iframe document as it is created, providing it with defaults from the
+ * get-go.
+ *
  * @param   {Object}             [opts]
  * @param   {HTMLElement|jQuery} [opts.parent=document.body]  the parent element to which the iframe is appended
  * @param   {boolean}            [opts.prepend=false]         if true, the iframe gets prepended to the parent, rather than appended
+ * @param   {string}             [opts.elementStyles]         cssText string, styles the iframe _element_
+ * @param   {string}             [opts.documentStyles]        cssText string of entire rules, styles the iframe document, e.g.
+ *                                                            "html, body { overflow: hidden; } div.foo { margin: 2em; }"
  * @returns {HTMLIFrameElement}
  */
 function createIframe ( opts ) {
@@ -80,16 +87,19 @@ function createIframe ( opts ) {
         _document = parent.ownerDocument,
         iframe = _document.createElement( "iframe" );
 
+    opts || ( opts = {} );
+
+    if ( opts.elementStyles ) iframe.style.cssText = ensureTrailingSemicolon( opts.elementStyles );
     iframe.frameborder = "0";
 
-    if ( opts && opts.prepend ) {
+    if ( opts.prepend ) {
         parent.insertBefore( iframe, parent.firstChild );
     } else {
         parent.appendChild( iframe );
     }
 
     iframe.src = 'about:blank';
-    createIframeDocument( iframe );
+    createIframeDocument( iframe, opts.documentStyles );
 
     return iframe;
 }
@@ -101,15 +111,18 @@ function createIframe ( opts ) {
  * descendant of the body element. A document inside an iframe can only be created when these conditions are met.
  *
  * @param   {HTMLIFrameElement|jQuery}  iframe
+ * @param   {string}                    [documentStyles]  cssText string of CSS rules, styles the iframe document, e.g.
+ *                                                        "html, body { overflow: hidden; } div.foo { margin: 2em; }"
  * @returns {Document}
  */
-function createIframeDocument ( iframe ) {
+function createIframeDocument ( iframe, documentStyles ) {
     if ( varExists( $ ) && iframe instanceof $ ) iframe = iframe[0];
 
     if ( ! iframe.ownerDocument.body.contains( iframe ) ) throw new Error( "The iframe has not been appended to the DOM, or is not a descendant of the body element. Can't create an iframe content document." );
     if ( ! iframe.contentDocument ) throw new Error( "Cannot access the iframe content document. Check for cross-domain policy restrictions." );
 
-    iframe.contentDocument.write( '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title></title>\n</head>\n<body>\n</body>\n</html>' );
+    if ( documentStyles ) documentStyles = '<style type="text/css">\n' + documentStyles + '\n</style>\n';
+    iframe.contentDocument.write( '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title></title>\n' + documentStyles + '</head>\n<body>\n</body>\n</html>' );
 
     return iframe.contentDocument;
 }

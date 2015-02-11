@@ -35,3 +35,14 @@ function warn ( message ) {
     if ( typeof console !== "undefined" ) console.warn ? console.warn( message ) : log( "WARN " + message );
 }
 
+
+/**
+ * Makes sure a string ends in a semicolon, unless the string is empty. Useful for cssText strings.
+ *
+ * @param   {string} cssString
+ * @returns {string}
+ */
+function ensureTrailingSemicolon ( cssString ) {
+    if ( cssString.length && cssString.slice( -1 ) !== ";" ) cssString += ";";
+    return cssString;
+}
