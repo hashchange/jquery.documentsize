@@ -243,6 +243,24 @@ function testIframeExpands () {
 }
 
 /**
+ * Forces a reflow for a given element, in case it doesn't happen automatically.
+ *
+ * For the technique, see http://stackoverflow.com/a/14382251/508355
+ *
+ * For some background, see e.g. http://apmblog.dynatrace.com/2009/12/12/understanding-internet-explorer-rendering-behaviour/
+ *
+ * @param {HTMLElement|jQuery} element
+ */
+function forceReflow ( element ) {
+    if ( !varExists( $ ) ) throw new Error( "This method uses jQuery, but the $ variable is not available" );
+
+    var $element =  element instanceof $ ? element : $( element );
+
+    $element.css( { display: "none" } ).height();
+    $element.css( { display: "block" } );
+}
+
+/**
  * Detects if the browser is on iOS. Works for Safari as well as other browsers, say, Chrome on iOS.
  *
  * Required for some iOS behaviour which can't be feature-detected in any way.

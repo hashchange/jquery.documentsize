@@ -480,12 +480,6 @@ function testHtmlKeepsBottomMargin () {
         }
     };
 
-    function forceReflow ( element ) {
-        // For the technique, see http://stackoverflow.com/a/14382251/508355
-        $( element ).css( { display: "none" } ).height();
-        $( element ).css( { display: "block" } );
-    }
-
 }
 
 /**

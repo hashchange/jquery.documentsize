@@ -4,8 +4,8 @@
 
     describeUnless(
         isIE( { lt: 11 } ),
-        "Skipping extensive geometry tests in IE < 11. Older IE versions lack the capabilities to run them.",
-        'Geometry tests', function () {
+        "Skipping comprehensive geometry tests in IE < 11. Older IE versions lack the capabilities to run them.",
+        'Comprehensive geometry tests', function () {
 
         var htmlOverflowScenarios = {
                 'documentElement styled with overflow: "visible"': function ( $html ) { $html.overflow( "visible" ); },
@@ -78,13 +78,18 @@
                                 $body.prepend( $content );
 
                                 // Setting up margins, padding, border (identical for all scenarios)
-                                $html.margin( 64 )
+                                $html
+                                    .margin( 64 )
                                     .border( 32 )
                                     .padding( 16 );
-                                $body.margin( 8 )
+                                $body
+                                    .margin( 8 )
                                     .border( 4 )
                                     .padding( 2 );
-                                $content.border( 1 );
+                                $content
+                                    .noMargin()
+                                    .noPadding()
+                                    .border( 1 );
 
                                 // Setting up the scenario
                                 htmlOverflowSetup( $html );
