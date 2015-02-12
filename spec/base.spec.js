@@ -4,10 +4,6 @@
 
     describe( 'Basic usage', function () {
 
-        beforeEach( function () {
-            // ...
-        } );
-
         describe( 'Document argument', function () {
 
             describe( 'When called without arguments', function () {

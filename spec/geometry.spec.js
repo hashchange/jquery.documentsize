@@ -2,7 +2,10 @@
 (function () {
     "use strict";
 
-    describe( 'Geometry tests', function () {
+    describeUnless(
+        isIE( { lt: 11 } ),
+        "Skipping extensive geometry tests in IE < 11. Older IE versions lack the capabilities to run them.",
+        'Geometry tests', function () {
 
         var htmlOverflowScenarios = {
                 'documentElement styled with overflow: "visible"': function ( $html ) { $html.overflow( "visible" ); },
