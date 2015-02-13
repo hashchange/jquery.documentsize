@@ -101,7 +101,18 @@
 
         } );
 
-        describe( 'When the body content is overflowing the viewport', function () {
+        describe_noPhantom( 'When the body content is overflowing the viewport', function () {
+
+            // PhantomJS is excluded from these tests because it doesn't behave like a normal browser with regard to
+            // viewport size. When content overflows the viewport, PhantomJS enlarges the viewport until the document
+            // content fits inside again.
+            //
+            // For that reason, the tests below would fail in PhantomJS. The $.documentWidth() and $.documentHeight()
+            // methods themselves return correct results, but the numbers they are compared to are wrong. The
+            // calculation of the expected document size would have to be different for PhantomJS.
+            //
+            // Excluding PhantomJS from these tests does not matter because PhantomJS is tested in much more detail in
+            // the comprehensive geometry tests.
 
             beforeAll( function () {
 
@@ -142,7 +153,9 @@
 
         } );
 
-        describe( 'When the body has a fixed size and is larger than the viewport, and its content fits inside body and viewport', function () {
+        describe_noPhantom( 'When the body has a fixed size and is larger than the viewport, and its content fits inside body and viewport', function () {
+
+            // Not run in PhantomJS. For the reasons, see above.
 
             beforeAll( function () {
 
