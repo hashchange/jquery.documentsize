@@ -20,7 +20,7 @@
 
             describe( 'When called with a document argument', function () {
 
-                var $iframe, iframeDocument;
+                var $iframe, iframeDocument, iframeWindow;
 
                 beforeAll( function () {
                     $iframe = $( createIframe() )
@@ -29,6 +29,7 @@
                         .contentBox( 250, 250 );
 
                     iframeDocument = $iframe[0].contentDocument;
+                    iframeWindow = $iframe[0].contentWindow;
                 } );
 
                 afterAll( function () {
@@ -36,11 +37,11 @@
                 } );
 
                 it( '$.documentWidth() returns the result for that document', function () {
-                    expect( $.documentWidth( iframeDocument ) ).toEqual( 250 );
+                    expect( $.documentWidth( iframeDocument ) ).toEqual( $( iframeWindow ).width() );
                 } );
 
                 it( '$.documentHeight() returns the result for that document', function () {
-                    expect( $.documentHeight( iframeDocument ) ).toEqual( 250 );
+                    expect( $.documentHeight( iframeDocument ) ).toEqual( $( iframeWindow ).height() );
                 } );
 
             } );
