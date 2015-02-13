@@ -181,4 +181,4 @@
 
     }
 
-}( jQuery || $ ));
+}( typeof jQuery !== "undefined" ? jQuery : $ ));
