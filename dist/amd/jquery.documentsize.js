@@ -1,4 +1,4 @@
-// jQuery.documentSize, v0.1.0
+// jQuery.documentSize, v0.2.0
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
@@ -205,7 +205,7 @@
     
         }
     
-    }( jQuery || $ ));
+    }( typeof jQuery !== "undefined" ? jQuery : $ ));
     return jQuery.documentSize;
 
 } ));
