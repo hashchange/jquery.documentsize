@@ -2,21 +2,32 @@
 
 Detects the real width and height of the document.
 
-Not yet quite ready. Pretty much an alpha release, stay clear for now.
+Works cross-browser, and returns the correct result in even the most exotic scenarios.
+
+## Usage
+
+Using it is trivial. Call `$.documentWidth()` or `$.documentHeight()` to get the results for the global `document`. 
+
+For specific documents e.g. in an embedded iframe or a child window you have access to, pass the document as the argument: `$.documentWidth( myIframe.contentDocument )` or `$.documentHeight( myIframe.contentDocument )`.
 
 ## Dependencies and setup
 
-## Components
+[jQuery][] is the only dependency. Include jquery.documentsize.js after [jQuery][].
 
-## Usage and examples
+The stable version of jQuery.documentSize is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install jquery.documentsize`. With npm, it is `npm install jquery.documentsize`.
 
-### The basics
+## Browser support
 
-### Options
+jQuery.documentSize has been tested with 
+
+- 2015 versions of Chrome, Firefox, Safari, and Opera on the Desktop
+- IE8+
+- Safari on iOS 8, Chrome on Android 5
+- PhantomJS, SlimerJS
 
 ## Build process and tests
 
-If you'd like to fix, customize or otherwise improve the project: here are your tools.
+If you'd like to fix, customize or otherwise improve jQuery.documentSize: here are your tools.
 
 ### Setup
 
@@ -27,13 +38,13 @@ If you'd like to fix, customize or otherwise improve the project: here are your 
 - Run `npm install`. (Creates the environment.)
 - Run `bower install`. (Fetches the dependencies of the script.)
 
-Your test and build environment is ready now. If you want to test against specific versions of Backbone, edit `bower.json` first.
+Your test and build environment is ready now.
 
 ### Running tests, creating a new build
 
 #### Considerations for testing
 
-To run the tests on on remote clients (mobile devices), start a web server with `grunt interactive` and visit `http://[your-host-ip]:9400/web-mocha/` with the client browser. Running the tests in the browser like this takes a _long_ time, so it makes sense to disable the power-save/sleep/auto-lock timeout on the mobile device. 
+To run the tests on remote clients (mobile devices), start a web server with `grunt interactive` and visit `http://[your-host-ip]:9400/web-mocha/` with the client browser. Running the tests in the browser like this takes a _long_ time, so it makes sense to disable the power-save/sleep/auto-lock timeout on the mobile device. 
 
 #### Tool chain and commands
 
@@ -69,7 +80,13 @@ MIT.
 
 Copyright (c) 2015 Michael Heim.
 
-[Backbone]: http://backbonejs.org/ "Backbone.js"
+[dist-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/jquery.documentsize.js "jquery.documentsize.js"
+[dist-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/jquery.documentsize.min.js "jquery.documentsize.min.js"
+[dist-amd-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.js "jquery.documentsize.js, AMD build"
+[dist-amd-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.min.js "jquery.documentsize.min.js, AMD build"
+
+[jQuery]: http://jquery.com/ "jQuery"
+
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
