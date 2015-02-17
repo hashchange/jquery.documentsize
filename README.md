@@ -45,6 +45,14 @@ jQuery.documentSize has been tested with
 - Safari on iOS 8, Chrome on Android 5
 - PhantomJS, SlimerJS
 
+## Performance
+
+Is there a performance penalty for the added accuracy jQuery.documentSize provides, compared to plain jQuery calls? The answer is twofold, but the short version is "no".
+
+When the component loads, it tests the browser – jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
+
+Once that is done, jQuery.documentSize is actually faster than the equivalent jQuery call.
+
 ## How is the document size defined?
 
 The document width and height are not defined in the spec. But even though the terms are absent, the concept is there. The W3C [refers to it][w3c-docsize] as "the area of the canvas on which the document is rendered". Nothing is said about the size of that area, except that "rendering generally occurs within a finite region of the canvas, established by the user agent".
@@ -61,15 +69,9 @@ This definition, as well as the description by the W3C, allows us to fill in the
 
 - It's all about scrolling, but only that of the viewport. When content is tucked away inside a scrolling div, it doesn't expand the document, no matter how large it is.
 
-- The size of the document is not the same as that of the documentElement (root element). If it were, margins set on the documentElement would be ignored, even though they increase the scrollable area. Also, you can style the documentElement in ways which affect its size differently from that of the document. The documentElement can be set to an explicit `width` and `height` while still allowing its content to overflow. It can be positioned absolutely, creating extra space to the top and left which is part of the scrollable area. (I am not suggesting that those a particularly good ideas.) The sizes of document and documentElement are related, but not even strictly linked.
+- The size of the document is not the same as that of the documentElement (root element). If it were, margins set on the documentElement would be ignored, even though they increase the scrollable area. 
 
-## Performance
-
-Is there a performance penalty for the added accuracy jQuery.documentSize provides, compared to plain jQuery calls? The answer is twofold, but the short version is "no".
-
-When the component loads, it tests the browser – jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
-
-Once that is done, jQuery.documentSize is actually faster than the equivalent jQuery call.
+  Also, you can style the documentElement in ways which affect its size differently from that of the document. The documentElement can be set to an explicit `width` and `height` while still allowing its content to overflow. It can be positioned absolutely, creating extra space to the top and left which is part of the scrollable area. (I am not suggesting that those a particularly good ideas.) The sizes of document and documentElement are related, but not even strictly linked.
 
 ## Build process and tests
 
