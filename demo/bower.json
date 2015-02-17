@@ -23,7 +23,8 @@
   "dependencies": {
     "jquery": "^1",
     "requirejs": "~2.1.14",
-    "foundation": "~5.3.3"
+    "foundation": "~5.3.3",
+    "zepto": "~1.1.6"
   },
   "resolutions": {
     "jquery": "^1"
