@@ -12,9 +12,11 @@ Call `$.documentWidth()` or `$.documentHeight()` to get the results for the glob
 
 For specific documents, e.g. in an embedded iframe or a child window you have access to, pass the document as an argument: `$.documentWidth( myIframe.contentDocument )` or `$.documentHeight( myIframe.contentDocument )`.
 
-## Why? Doesn't jQuery tell me the document size when I check $( document ).width() and .height()?
+## What does it do that jQuery doesn't?
 
-Well it does, but jQuery resorts to guesswork. It queries five properties and simply picks the largest one. That approach works in most cases, but it is not reliable across the board.
+You might wonder why you'd even need such a plugin. After all, jQuery can detect the dimensions of the document out of the box, just by calling `$(document).width()` and `$(document).height()`. Right?
+
+Well, yes, but jQuery resorts to guesswork. It queries five properties and simply picks the largest one. That approach works in most cases, but it is not reliable across the board.
 
 - Results are inaccurate in IE < 11 when there is a scroll bar on one axis, but not on the other. jQuery erroneously adds the width of the scroll bar to the document.
 - Results are downright unpredictable in Firefox and IE when both the documentElement and the body are set to anything other than `overflow: visible`.
@@ -23,7 +25,7 @@ jQuery.documentSize does not have these limitations. Unlike jQuery, it tests the
 
 ## Dependencies and setup
 
-There are no hard dependencies. Despite its name, jQuery.documentSize doesn't even rely on [jQuery][] - it just needs a namespace variable to attach itself to. It will look for jQuery, [Zepto][], or just a simple `$` variable when it is loaded. Include jquery.documentsize.js when your library of choice, or your `$` variable, is available.
+There are no hard dependencies. Despite its name, jQuery.documentSize doesn't even rely on [jQuery][] – it just needs a namespace variable to attach itself to. It will look for jQuery, [Zepto][], or just a simple `$` variable when it is loaded. Include jquery.documentsize.js when your library of choice, or your `$` variable, is available.
 
 The stable version of jQuery.documentSize is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install jquery.documentsize`. With npm, it is `npm install jquery.documentsize`.
 
@@ -65,7 +67,7 @@ This definition, as well as the description by the W3C, allows us to fill in the
 
 Is there a performance penalty for the added accuracy jQuery.documentSize provides, compared to plain jQuery calls? The answer is twofold, but the short version is "no".
 
-When the component loads, it tests the browser - jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
+When the component loads, it tests the browser – jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
 
 Once that is done, jQuery.documentSize is actually faster than the equivalent jQuery call.
 
@@ -134,13 +136,13 @@ Copyright (c) 2015 Michael Heim.
 [jQuery]: http://jquery.com/ "jQuery"
 [Zepto]: http://zeptojs.com/ "Zepto.js"
 
-[w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C - Visual formatting model, 9.1.1: The viewport"
+[w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
 [demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/amd.js "Demo: AMD setup with Zepto"
 
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
-[Karma]: http://karma-runner.github.io/ "Karma - Spectacular Test Runner for Javascript"
+[Karma]: http://karma-runner.github.io/ "Karma – Spectacular Test Runner for Javascript"
 [Jasmine]: http://jasmine.github.io/ "Jasmine: Behavior-Driven JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
