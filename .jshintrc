@@ -22,9 +22,8 @@
   "strict": true,
 
   "globals": {
-    "Backbone": true,
-    "_": true,
     "$": true,
+    "Zepto": true,
 
     "require": false,
     "define": false,

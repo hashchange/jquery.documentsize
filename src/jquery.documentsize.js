@@ -181,4 +181,8 @@
 
     }
 
-}( typeof jQuery !== "undefined" ? jQuery : $ ));
+}(
+    typeof jQuery !== "undefined" ? jQuery :
+    typeof Zepto !== "undefined" ? Zepto :
+    $
+));
