@@ -2,19 +2,37 @@
 
 Detects the real width and height of the document.
 
-Works cross-browser, and returns the correct result in even the most exotic scenarios.
+Works cross-browser, and returns the correct result in even the most exotic scenarios. 
+
+And actually, because jQuery.documentSize is written in pure Javascript, you can use it [without jQuery][setup], too.
 
 ## Usage
 
-Using it is trivial. Call `$.documentWidth()` or `$.documentHeight()` to get the results for the global `document`. 
+Call `$.documentWidth()` or `$.documentHeight()` to get the results for the global `document`.
 
-For specific documents e.g. in an embedded iframe or a child window you have access to, pass the document as the argument: `$.documentWidth( myIframe.contentDocument )` or `$.documentHeight( myIframe.contentDocument )`.
+For specific documents, e.g. in an embedded iframe or a child window you have access to, pass the document as an argument: `$.documentWidth( myIframe.contentDocument )` or `$.documentHeight( myIframe.contentDocument )`.
+
+## Why? Doesn't jQuery tell me the document size when I check $( document ).width() and .height()?
+
+Well it does, but jQuery resorts to guesswork. It queries five properties and simply picks the largest one. That approach works in most cases, but it is not reliable across the board.
+
+- Results are inaccurate in IE < 11 when there is a scroll bar on one axis, but not on the other. jQuery erroneously adds the width of the scroll bar to the document.
+- Results are downright unpredictable in Firefox and IE when both the documentElement and the body are set to anything other than `overflow: visible`.
+
+jQuery.documentSize does not have these limitations. Unlike jQuery, it tests the actual behaviour of the browser. Based on that test, it queries the right property for the document dimensions.
 
 ## Dependencies and setup
 
-[jQuery][] is the only dependency. Include jquery.documentsize.js after [jQuery][].
+There are no hard dependencies. Despite its name, jQuery.documentSize doesn't even rely on [jQuery][] - it just needs a namespace variable to attach itself to. It will look for jQuery, [Zepto][], or just a simple `$` variable when it is loaded. Include jquery.documentsize.js when your library of choice, or your `$` variable, is available.
 
 The stable version of jQuery.documentSize is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install jquery.documentsize`. With npm, it is `npm install jquery.documentsize`.
+
+**In case you don't use jQuery**, there are a few things you should know:
+
+- If you install jQuery.documentSize with Bower or npm, jQuery is downloaded as a dependency (any version, defaults to the latest). Feel free to ignore it and replace it with your own choice.
+- If you don't use jQuery or Zepto, you must provide a `$` variable of some sort. It can be another library, or just a plain object.
+- If that `$` variable happens to be a function, it will be passed a callback and is expected to run it on DOM-ready.
+- If you use the AMD/UMD build of jQuery.documentSize, you must provide a 'jquery' dependency. Fake it as needed ([see example][demo-amd-zepto]).
 
 ## Browser support
 
@@ -24,6 +42,32 @@ jQuery.documentSize has been tested with
 - IE8+
 - Safari on iOS 8, Chrome on Android 5
 - PhantomJS, SlimerJS
+
+## How is the document size defined?
+
+The document width and height are not defined in the spec. But even though the terms are absent, the concept is there. The W3C [refers to it][w3c-docsize] as "the area of the canvas on which the document is rendered". Nothing is said about the size of that area, except that "rendering generally occurs within a finite region of the canvas, established by the user agent".
+
+According to the spec, if the viewport is smaller than that area, "[the user agent should offer a scrolling mechanism][w3c-docsize]". This is the most implicit of definitions, but there you have it: the document size is equal to the area which you can access by scrolling the viewport. In the terminology of Javascript, document width and height are identical to the scrollWidth and scrollHeight of the viewport.
+
+This definition, as well as the description by the W3C, allows us to fill in the details.
+
+- "The canvas on which the document is rendered" is at least as large as the viewport. The viewport sets the minimum width and height of the document, even if the document content does not take up that much space.
+
+- The user agent _should_ offer a scrolling mechanism, but it doesn't have to. If the browser denies you the actual scroll bars to get to some parts of the content, that doesn't shrink the document. In other words, if window scroll bars are suppressed with `overflow: hidden`, the document size is unaffected. This is in line with the behaviour of scrollWidth and scrollHeight for ordinary HTML elements.
+
+- If scrolling is enabled but content is still out of reach, that content does not enlarge the document. Elements positioned out of view, ie above or to the left of the (0,0) coordinate of the viewport, don't matter for the document size.
+
+- It's all about scrolling, but only that of the viewport. When content is tucked away inside a scrolling div, it doesn't expand the document, no matter how large it is.
+
+- The size of the document is not the same as that of the documentElement (root element). If it were, margins set on the documentElement would be ignored, even though they increase the scrollable area. Also, you can style the documentElement in ways which affect its size differently from that of the document. The documentElement can be set to an explicit `width` and `height` while still allowing its content to overflow. It can be positioned absolutely, creating extra space to the top and left which is part of the scrollable area. (I am not suggesting that those a particularly good ideas.) The sizes of document and documentElement are related, but not even strictly linked.
+
+## Performance
+
+Is there a performance penalty for the added accuracy jQuery.documentSize provides, compared to plain jQuery calls? The answer is twofold, but the short version is "no".
+
+When the component loads, it tests the browser - jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
+
+Once that is done, jQuery.documentSize is actually faster than the equivalent jQuery call.
 
 ## Build process and tests
 
@@ -85,7 +129,13 @@ Copyright (c) 2015 Michael Heim.
 [dist-amd-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.js "jquery.documentsize.js, AMD build"
 [dist-amd-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.min.js "jquery.documentsize.min.js, AMD build"
 
+[setup]: #dependencies-and-setup "Setup"
+
 [jQuery]: http://jquery.com/ "jQuery"
+[Zepto]: http://zeptojs.com/ "Zepto.js"
+
+[w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C - Visual formatting model, 9.1.1: The viewport"
+[demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/amd.js "Demo: AMD setup with Zepto"
 
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
