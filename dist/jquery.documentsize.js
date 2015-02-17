@@ -1,4 +1,4 @@
-// jQuery.documentSize, v0.2.0
+// jQuery.documentSize, v1.0.0
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
@@ -28,6 +28,16 @@
         if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
         return _document[elementNameForDocSizeQuery].scrollHeight;
     };
+
+    // Let's prime $.documentWidth() and $.documentHeight() immediately after the DOM is ready. It is best to do it up
+    // front because the test touches the DOM, so let's get it over with before people set up handlers for mutation
+    // events and such.
+    if ( typeof $ === "function" ) {
+        $( function () {
+            if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+        } );
+    }
+
 
     /**
      * Detects which element to use for a document size query (body or documentElement).
@@ -186,4 +196,8 @@
 
     }
 
-}( typeof jQuery !== "undefined" ? jQuery : $ ));
+}(
+    typeof jQuery !== "undefined" ? jQuery :
+    typeof Zepto !== "undefined" ? Zepto :
+    $
+));
