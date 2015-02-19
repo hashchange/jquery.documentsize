@@ -121,7 +121,7 @@ function createIframeDocument ( iframe, documentStyles ) {
     if ( ! iframe.ownerDocument.body.contains( iframe ) ) throw new Error( "The iframe has not been appended to the DOM, or is not a descendant of the body element. Can't create an iframe content document." );
     if ( ! iframe.contentDocument ) throw new Error( "Cannot access the iframe content document. Check for cross-domain policy restrictions." );
 
-    if ( documentStyles ) documentStyles = '<style type="text/css">\n' + documentStyles + '\n</style>\n';
+    documentStyles = documentStyles ? '<style type="text/css">\n' + documentStyles + '\n</style>\n' : "";
     iframe.contentDocument.write( '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title></title>\n' + documentStyles + '</head>\n<body>\n</body>\n</html>' );
 
     return iframe.contentDocument;
