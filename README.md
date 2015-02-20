@@ -25,7 +25,7 @@ jQuery.documentSize does not have these limitations. Unlike jQuery, it tests the
 
 ## Dependencies and setup
 
-There are no hard dependencies. Despite its name, jQuery.documentSize doesn't even rely on [jQuery][] – it just needs a namespace variable to attach itself to. It will look for jQuery, [Zepto][], or just a simple `$` variable when it is loaded. Include jquery.documentsize.js when your library of choice, or your `$` variable, is available.
+There are no hard dependencies. Despite its name, jQuery.documentSize doesn't even rely on [jQuery][] – it just needs a namespace variable to attach itself to. It will look for jQuery, [Zepto][], or just a simple `$` variable when it is loaded. Include jquery.documentsize.js when your library of choice, or your `$` variable, is ready for use.
 
 The stable version of jQuery.documentSize is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install jquery.documentsize`. With npm, it is `npm install jquery.documentsize`.
 
@@ -128,6 +128,8 @@ MIT.
 
 Copyright (c) 2015 Michael Heim.
 
+Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [See file][data-provider.js].
+
 [dist-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/jquery.documentsize.js "jquery.documentsize.js"
 [dist-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/jquery.documentsize.min.js "jquery.documentsize.min.js"
 [dist-amd-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.js "jquery.documentsize.js, AMD build"
@@ -140,6 +142,8 @@ Copyright (c) 2015 Michael Heim.
 
 [w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
 [demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/amd.js "Demo: AMD setup with Zepto"
+
+[data-provider.js]: https://github.com/hashchange/jquery.documentsize/blob/master/spec/helpers/data-provider.js "Source code of data-provider.js"
 
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
