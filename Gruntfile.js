@@ -8,8 +8,7 @@ module.exports = function (grunt) {
         'demo/**/*',
         'spec/**/*',
         'src/**/*'
-      ],
-      SINON_SOURCE_DIR = 'node_modules/karma-chai-plugins/node_modules/sinon/lib/sinon/';
+      ];
 
   // Project configuration.
   grunt.config.init({
@@ -111,16 +110,6 @@ module.exports = function (grunt) {
       }
     },
 
-    plato: {
-      component: {
-        src: 'dist/jquery.documentsize.js',
-        dest: 'reports',
-        options: {
-          jshint: false
-        }
-      }
-    },
-
     'sails-linker': {
       options: {
         startTag: '<!--SCRIPTS-->',
@@ -140,27 +129,6 @@ module.exports = function (grunt) {
         files: {
           // the target file is changed in place; for generating copies, run preprocess first
           'web-mocha/index.html': ['spec/**/*.+(spec|test|tests).js']
-        }
-      },
-      interactive_sinon: {
-        options: {
-          startTag: '<!--SINON COMPONENT SCRIPTS-->',
-          endTag: '<!--SINON COMPONENT SCRIPTS END-->'
-        },
-        files: {
-          // the target file is changed in place; for generating copies, run preprocess first
-          //
-          // The util/core.js file must be loaded first, and typeof.js must be loaded before match.js.
-          //
-          // mock.js must be loaded last (specifically, after spy.js). For the pattern achieving it, see
-          // http://gruntjs.com/configuring-tasks#globbing-patterns
-          'web-mocha/index.html': [
-            SINON_SOURCE_DIR + 'util/core.js',
-            SINON_SOURCE_DIR + 'typeof.js',
-            SINON_SOURCE_DIR + '**/*.js',
-            '!' + SINON_SOURCE_DIR + 'mock.js',
-            SINON_SOURCE_DIR + 'mock.js'
-          ]
         }
       }
     },
@@ -252,7 +220,6 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-plato');
   grunt.loadNpmTasks('grunt-preprocess');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -265,8 +232,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-focus');
 
   grunt.registerTask('test', ['jshint:components', 'karma:test']);
-  grunt.registerTask('webtest', ['preprocess:interactive', 'sails-linker:interactive_sinon', 'sails-linker:interactive_spec', 'connect:testNoReload']);
-  grunt.registerTask('interactive', ['preprocess:interactive', 'sails-linker:interactive_sinon', 'sails-linker:interactive_spec', 'connect:test', 'watch:livereload']);
+  grunt.registerTask('webtest', ['preprocess:interactive', 'sails-linker:interactive_spec', 'connect:testNoReload']);
+  grunt.registerTask('interactive', ['preprocess:interactive', 'sails-linker:interactive_spec', 'connect:test', 'watch:livereload']);
   grunt.registerTask('demo', ['connect:demo', 'focus:demo']);
   grunt.registerTask('build', ['jshint:components', 'karma:build', 'preprocess:build', 'concat', 'uglify', 'jshint:concatenated']);
   grunt.registerTask('ci', ['build', 'watch:build']);

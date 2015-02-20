@@ -9,6 +9,7 @@
   "main": "dist/jquery.documentsize.js",
   "keywords": [
     "jquery",
+    "jquery-plugin",
     "document",
     "dimensions",
     "width",

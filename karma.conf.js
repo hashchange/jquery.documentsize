@@ -27,8 +27,6 @@ module.exports = function(config) {
       // Component dependencies
       'bower_components/jquery/dist/jquery.js',
 
-      'lib-other/**/*.js',
-
       // Component under test
       'src/jquery.documentsize.js',
 
