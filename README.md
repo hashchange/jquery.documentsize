@@ -122,6 +122,37 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
+## Release Notes
+
+### v1.0.2
+
+- Guarded against inherited display styles for the browser test iframe
+- Removed redundant boilerplate from build environment
+
+### v1.0.1
+
+- Added missing copyright notice to Leche test helper
+- Fixed minor test suite bugs
+- Improved documentation
+
+### v1.0.0
+
+- Added Zepto support
+- Made the browser test run on DOM-ready
+- Completed documentation
+- Added an AMD demo, using Zepto
+
+### v0.2.0
+
+- Removed jQuery version range restriction
+- Fixed use with plain `$` variable
+- Improved tests
+- Added basic documentation
+
+### v.0.1.0
+
+- Initial public release
+
 ## License
 
 MIT.
