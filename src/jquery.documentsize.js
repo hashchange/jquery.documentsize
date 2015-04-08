@@ -117,7 +117,7 @@
         var iframe = document.createElement( "iframe" ),
             body = document.body;
 
-        iframe.style.cssText = "position: absolute; top: -600px; left: -600px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none;";
+        iframe.style.cssText = "position: absolute; top: -600px; left: -600px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none; display: block;";
         iframe.frameborder = "0";
 
         body.appendChild( iframe );
