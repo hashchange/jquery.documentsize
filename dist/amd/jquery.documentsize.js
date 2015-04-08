@@ -1,4 +1,4 @@
-// jQuery.documentSize, v1.0.1
+// jQuery.documentSize, v1.0.2
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
@@ -141,7 +141,7 @@
             var iframe = document.createElement( "iframe" ),
                 body = document.body;
     
-            iframe.style.cssText = "position: absolute; top: -600px; left: -600px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none;";
+            iframe.style.cssText = "position: absolute; top: -600px; left: -600px; width: 500px; height: 500px; margin: 0px; padding: 0px; border: none; display: block;";
             iframe.frameborder = "0";
     
             body.appendChild( iframe );
