@@ -9,30 +9,70 @@
     // Instead, detection happens when either $.documentWidth or $.documentHeight is invoked for the first time. Given
     // their purpose, they won't be called until after the opening body tag has been parsed.
 
-    var elementNameForDocSizeQuery,
+    var _scrollbarWidth,
+        elementNameForDocSizeQuery,
         useGetComputedStyle = !! window.getComputedStyle;
 
+    /**
+     * @returns {number}
+     */
     $.documentWidth = function ( _document ) {
         _document || ( _document = document );
         if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
         return _document[elementNameForDocSizeQuery].scrollWidth;
     };
 
+    /**
+     * @returns {number}
+     */
     $.documentHeight = function ( _document ) {
         _document || ( _document = document );
         if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
         return _document[elementNameForDocSizeQuery].scrollHeight;
     };
 
-    // Let's prime $.documentWidth() and $.documentHeight() immediately after the DOM is ready. It is best to do it up
-    // front because the test touches the DOM, so let's get it over with before people set up handlers for mutation
-    // events and such.
+    /**
+     * @returns {number}
+     */
+    $.scrollbarWidth = browserScrollbarWidth;
+
+
+    // Let's prime $.documentWidth(), $.documentHeight() and $.scrollbarWidth() immediately after the DOM is ready. It
+    // is best to do it up front because the test touches the DOM, so let's get it over with before people set up
+    // handlers for mutation events and such.
     if ( typeof $ === "function" ) {
         $( function () {
             if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
         } );
+        $( browserScrollbarWidth );
     }
 
+
+    /**
+     * Does the actual work of $.scrollbarWidth. Protected from external modification. See $.scrollbarWidth for details.
+     *
+     * Adapted from Ben Alman's scrollbarWidth plugin. See
+     * - http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
+     * - http://jsbin.com/zeliy/1
+     *
+     * @returns {number}
+     */
+    function browserScrollbarWidth () {
+        var testEl;
+
+        if ( _scrollbarWidth === undefined ) {
+
+            testEl = document.createElement( "div" );
+            testEl.style.cssText = "width: 100px; height: 100px; overflow: scroll; position: absolute; top: -500px; left: -500px; margin: 0px; padding: 0px; border: none;";
+
+            document.body.appendChild( testEl );
+            _scrollbarWidth = testEl.offsetWidth - testEl.clientWidth;
+            document.body.removeChild( testEl );
+
+        }
+
+        return _scrollbarWidth;
+    }
 
     /**
      * Detects which element to use for a document size query (body or documentElement).

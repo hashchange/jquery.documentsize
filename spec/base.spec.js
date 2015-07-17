@@ -48,6 +48,34 @@
 
         } );
 
+        describe( 'The methods do not rely on the exposed plugin API. When all other public methods of the plugin are deleted from jQuery', function () {
+
+            var deletedApi;
+
+            afterEach( function () {
+                restorePluginApi( deletedApi );
+            } );
+
+            it( '$.documentWidth() works correctly and returns the width of the document', function () {
+                var expected = $.documentWidth();
+                deletedApi = deletePluginApiExcept( "documentWidth", true );
+                expect( $.documentWidth() ).toEqual( expected );
+            } );
+
+            it( '$.documentHeight() works correctly and returns the height of the document', function () {
+                var expected = $.documentHeight();
+                deletedApi = deletePluginApiExcept( "documentHeight", true );
+                expect( $.documentHeight() ).toEqual( expected );
+            } );
+
+            it( '$.scrollbarWidth() works correctly and returns the global scroll bar width', function () {
+                var expected = $.scrollbarWidth();
+                deletedApi = deletePluginApiExcept( "scrollbarWidth", true );
+                expect( $.scrollbarWidth() ).toEqual( expected );
+            } );
+
+        } );
+
     } );
 
 })();
