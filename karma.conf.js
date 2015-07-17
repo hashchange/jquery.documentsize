@@ -14,12 +14,7 @@ module.exports = function(config) {
 
 
     // frameworks to use
-    //
-    // Available for chai (installed with karma-chai-plugins):
-    // sinon-chai, chai-as-promised, chai-jquery. Enable as needed.
-    //
-    // NB sinon-chai includes Sinon; chai-jquery does _not_ include jQuery
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'jasmine-matchers'],
 
 
     // list of files / patterns to load in the browser
