@@ -591,6 +591,24 @@ function testElementKeepsBottomMargin () {
 }
 
 /**
+ * Tests if the browser supports window.innerHeight and window.innerWidth.
+ *
+ * - IE8 does not have these properties.
+ * - FF up to FF24 does have them, but they are unusable. The bug has only been fixed in FF25 (released 29 Oct 2013).
+ *   It manifests itself in a fictional return value of 10 for these properties. See here:
+ *
+ *   + https://developer.mozilla.org/en-US/docs/Web/API/Window.innerWidth
+ *   + https://developer.mozilla.org/en-US/docs/Web/API/Window.innerHeight
+ *   + https://bugzilla.mozilla.org/show_bug.cgi?id=641188
+ *
+ * @returns {boolean}
+ */
+function supportsWindowInnerHeight () {
+    var innerHeight = window.innerHeight;
+    return innerHeight !== undefined && innerHeight > 10;
+}
+
+/**
  * @name  AppliedOverflow
  * @type  {Object}
  *

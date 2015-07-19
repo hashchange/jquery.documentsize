@@ -163,6 +163,10 @@ $.fn.overflowY = function ( value ) {
     return this.css( { "overflow-y": value } );
 };
 
+$.fn.overflowAll = function ( value ) {
+    return this.overflow( value ).overflowX( value ).overflowY( value );
+};
+
 $.fn.boxModel = function ( value ) {
     if ( value ) {
         return this.css( { boxSizing: value } );

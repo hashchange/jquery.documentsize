@@ -15,7 +15,7 @@
  * @returns {{global: {}, fn: {}}}          the removed methods, stored in the .global and .fn properties
  */
 function deletePluginApiExcept ( exceptionName, isJQueryGlobal ) {
-    var globalApi = [ "documentWidth", "documentHeight", "scrollbarWidth" ],
+    var globalApi = [ "documentWidth", "documentHeight", "windowWidth", "windowHeight", "scrollbarWidth" ],
         fnApi = [],
         removed = { global: {}, fn:{} };
 

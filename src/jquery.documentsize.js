@@ -1,19 +1,20 @@
 ;( function ( $ ) {
     "use strict";
 
-    // IIFE generating the $.documentWidth and $.documentHeight functions.
+    // IIFE generating the $.documentWidth, $.documentHeight and $.scrollbarWidth functions.
     //
     // These functions need to run a feature detection which requires insertion of an iframe. The body element in the
     // main document must be available when that happens (ie, the opening body tag must have been parsed). For that
     // reason, the detection does not run up front - after all, the code might be loaded and run while parsing the head.
-    // Instead, detection happens when either $.documentWidth or $.documentHeight is invoked for the first time. Given
-    // their purpose, they won't be called until after the opening body tag has been parsed.
+    // Instead, detection happens when any of the functions is invoked for the first time, or on DOM-ready. Given their
+    // purpose, they won't be called until after the opening body tag has been parsed.
 
     var _scrollbarWidth,
         elementNameForDocSizeQuery,
         useGetComputedStyle = !! window.getComputedStyle;
 
     /**
+     * @param   {Document} [_document=document]
      * @returns {number}
      */
     $.documentWidth = function ( _document ) {
@@ -23,12 +24,31 @@
     };
 
     /**
+     * @param   {Document} [_document=document]
      * @returns {number}
      */
     $.documentHeight = function ( _document ) {
         _document || ( _document = document );
         if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
         return _document[elementNameForDocSizeQuery].scrollHeight;
+    };
+
+    /**
+     * @param   {Window} [_window=window]
+     * @returns {number}
+     */
+    $.windowWidth = function ( _window ) {
+        _window || ( _window = window );
+        return ( browserScrollbarWidth() || window.innerWidth === undefined ) ? _window.document.documentElement.clientWidth : _window.innerWidth;
+    };
+
+    /**
+     * @param   {Window} [_window=window]
+     * @returns {number}
+     */
+    $.windowHeight = function ( _window ) {
+        _window || ( _window = window );
+        return ( browserScrollbarWidth() || window.innerWidth === undefined ) ? _window.document.documentElement.clientHeight : _window.innerHeight;
     };
 
     /**

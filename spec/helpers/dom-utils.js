@@ -268,7 +268,38 @@ function forceReflow ( element ) {
  * @returns {boolean}
  */
 function isIOS () {
-    return /iPad|iPhone|iPod/g.test( navigator.userAgent );
+    return /iPad|iPhone|iPod/gi.test( navigator.userAgent );
+}
+
+/**
+ * Detects if the browser is on Android.
+ *
+ * @returns {boolean}
+ */
+function isAndroid () {
+    return /Android/gi.test( navigator.userAgent );
+}
+
+/**
+ * Detects if the browser is on Windows Phone.
+ *
+ * @returns {boolean}
+ */
+function isIEMobile () {
+    return /IEMobile/gi.test( navigator.userAgent );
+}
+
+/**
+ * Detects if the browser running on a phone or tablet.
+ *
+ * Using a short version, not exhaustive.
+ *
+ * For the list (long and short), and possible updates, see http://stackoverflow.com/a/3540295/508355 (community wiki)
+ *
+ * @returns {boolean}
+ */
+function isMobile () {
+    return isIOS() || isAndroid() || isIEMobile() || /webOS|BlackBerry|Opera Mini/gi.test( navigator.userAgent );
 }
 
 /**
