@@ -63,8 +63,8 @@
     if ( typeof $ === "function" ) {
         $( function () {
             if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+            browserScrollbarWidth();
         } );
-        $( browserScrollbarWidth );
     }
 
 
