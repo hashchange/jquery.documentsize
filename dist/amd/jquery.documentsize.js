@@ -1,4 +1,4 @@
-// jQuery.documentSize, v1.0.2
+// jQuery.documentSize, v1.1.0
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
@@ -25,38 +25,101 @@
     ;( function ( $ ) {
         "use strict";
     
-        // IIFE generating the $.documentWidth and $.documentHeight functions.
+        // IIFE generating the functions $.documentWidth, $.documentHeight, $.windowWidth, $.windowHeight, and
+        // $.scrollbarWidth.
         //
-        // These functions need to run a feature detection which requires insertion of an iframe. The body element in the
-        // main document must be available when that happens (ie, the opening body tag must have been parsed). For that
-        // reason, the detection does not run up front - after all, the code might be loaded and run while parsing the head.
-        // Instead, detection happens when either $.documentWidth or $.documentHeight is invoked for the first time. Given
-        // their purpose, they won't be called until after the opening body tag has been parsed.
+        // These functions need to run feature detections which requires insertion of an iframe ($.documentWidth/Height) and
+        // a div ($.scrollbarWidth). The body element in the main document must be available when that happens (ie, the
+        // opening body tag must have been parsed).
+        //
+        // For that reason, the detection does not run instantly - after all, the code might be loaded and run while parsing
+        // the head. Instead, detection happens on DOM-ready, or when any of the functions is invoked for the first time.
+        // Given the purpose of the functions, they won't be called until after the opening body tag has been parsed.
     
-        var elementNameForDocSizeQuery,
+        var _scrollbarWidth,
+            elementNameForDocSizeQuery,
             useGetComputedStyle = !! window.getComputedStyle;
     
+        /**
+         * @param   {Document} [_document=document]
+         * @returns {number}
+         */
         $.documentWidth = function ( _document ) {
             _document || ( _document = document );
             if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
             return _document[elementNameForDocSizeQuery].scrollWidth;
         };
     
+        /**
+         * @param   {Document} [_document=document]
+         * @returns {number}
+         */
         $.documentHeight = function ( _document ) {
             _document || ( _document = document );
             if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
             return _document[elementNameForDocSizeQuery].scrollHeight;
         };
     
-        // Let's prime $.documentWidth() and $.documentHeight() immediately after the DOM is ready. It is best to do it up
-        // front because the test touches the DOM, so let's get it over with before people set up handlers for mutation
-        // events and such.
+        /**
+         * @param   {Window} [_window=window]
+         * @returns {number}
+         */
+        $.windowWidth = function ( _window ) {
+            _window || ( _window = window );
+            return ( browserScrollbarWidth() || window.innerWidth === undefined ) ? _window.document.documentElement.clientWidth : _window.innerWidth;
+        };
+    
+        /**
+         * @param   {Window} [_window=window]
+         * @returns {number}
+         */
+        $.windowHeight = function ( _window ) {
+            _window || ( _window = window );
+            return ( browserScrollbarWidth() || window.innerWidth === undefined ) ? _window.document.documentElement.clientHeight : _window.innerHeight;
+        };
+    
+        /**
+         * @returns {number}
+         */
+        $.scrollbarWidth = browserScrollbarWidth;
+    
+    
+        // Let's prime $.documentWidth(), $.documentHeight() and $.scrollbarWidth() immediately after the DOM is ready. It
+        // is best to do it up front because the test touches the DOM, so let's get it over with before people set up
+        // handlers for mutation events and such.
         if ( typeof $ === "function" ) {
             $( function () {
                 if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+                browserScrollbarWidth();
             } );
         }
     
+    
+        /**
+         * Does the actual work of $.scrollbarWidth. Protected from external modification. See $.scrollbarWidth for details.
+         *
+         * Adapted from Ben Alman's scrollbarWidth plugin. See
+         * - http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
+         * - http://jsbin.com/zeliy/1
+         *
+         * @returns {number}
+         */
+        function browserScrollbarWidth () {
+            var testEl;
+    
+            if ( _scrollbarWidth === undefined ) {
+    
+                testEl = document.createElement( "div" );
+                testEl.style.cssText = "width: 100px; height: 100px; overflow: scroll; position: absolute; top: -500px; left: -500px; margin: 0px; padding: 0px; border: none;";
+    
+                document.body.appendChild( testEl );
+                _scrollbarWidth = testEl.offsetWidth - testEl.clientWidth;
+                document.body.removeChild( testEl );
+    
+            }
+    
+            return _scrollbarWidth;
+        }
     
         /**
          * Detects which element to use for a document size query (body or documentElement).
