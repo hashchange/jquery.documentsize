@@ -115,7 +115,7 @@
             // NB window.innerHeight, window.innerWidth return the dimensions of the browser window including scroll
             // bars. We must compensate for that.
 
-            describe( 'The window is known to have scroll bars.', function () {
+            describe_noPhantom( 'The window is known to have scroll bars.', function () {
 
                 beforeAll( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
@@ -231,7 +231,7 @@
 
             } );
 
-            describe( 'The window is known to have scroll bars, and has been scrolled.', function () {
+            describe_noPhantom( 'The window is known to have scroll bars, and has been scrolled.', function () {
 
                 beforeAll( function () {
                     // Setting the body to a huge size, so that scroll bars are guaranteed.
