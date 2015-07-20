@@ -1,13 +1,16 @@
 ;( function ( $ ) {
     "use strict";
 
-    // IIFE generating the $.documentWidth, $.documentHeight and $.scrollbarWidth functions.
+    // IIFE generating the functions $.documentWidth, $.documentHeight, $.windowWidth, $.windowHeight, and
+    // $.scrollbarWidth.
     //
-    // These functions need to run a feature detection which requires insertion of an iframe. The body element in the
-    // main document must be available when that happens (ie, the opening body tag must have been parsed). For that
-    // reason, the detection does not run up front - after all, the code might be loaded and run while parsing the head.
-    // Instead, detection happens when any of the functions is invoked for the first time, or on DOM-ready. Given their
-    // purpose, they won't be called until after the opening body tag has been parsed.
+    // These functions need to run feature detections which requires insertion of an iframe ($.documentWidth/Height) and
+    // a div ($.scrollbarWidth). The body element in the main document must be available when that happens (ie, the
+    // opening body tag must have been parsed).
+    //
+    // For that reason, the detection does not run instantly - after all, the code might be loaded and run while parsing
+    // the head. Instead, detection happens on DOM-ready, or when any of the functions is invoked for the first time.
+    // Given the purpose of the functions, they won't be called until after the opening body tag has been parsed.
 
     var _scrollbarWidth,
         elementNameForDocSizeQuery,

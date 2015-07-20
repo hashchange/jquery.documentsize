@@ -1,18 +1,40 @@
 # jQuery.documentSize
 
-Detects the real width and height of the document.
+<small>[Usage][usage] – [Why?][why] – [Setup][setup] – [Browser support][browsers] – [Performance][performance] –  [Precision][precision] – [Spec][spec] – [Build and test][build]</small>
 
-Works cross-browser, and returns the correct result in even the most exotic scenarios. 
+Detects the real width and height of the document. And the real width and height of the browser window.
+
+Works cross-browser, and returns the correct result in even the most exotic scenarios. It resolves the [shortcomings of jQuery][why] in that regard.
 
 And actually, because jQuery.documentSize is written in pure Javascript, you can use it [without jQuery][setup], too.
 
 ## Usage
 
+##### Document size
+
 Call `$.documentWidth()` or `$.documentHeight()` to get the results for the global `document`.
 
 For specific documents, e.g. in an embedded iframe or a child window you have access to, pass the document as an argument: `$.documentWidth( myIframe.contentDocument )` or `$.documentHeight( myIframe.contentDocument )`.
 
+##### Window size
+
+Same syntax here. Call `$.windowWidth()` or `$.windowHeight()` to get the results for the global `window`.
+
+For specific windows, e.g. an embedded iframe or a child window you have access to, pass the window as an argument: `$.windowWidth( myIframe.contentWindow )` or `$.windowHeight( myIframe.contentWindow )`.
+
+The return value is rounded to integer, fractional CSS pixels cannot be captured. See the notes on [precision, below][precision].
+
+##### Scroll bar size
+
+Call `$.scrollbarWidth()` to retrieve the size (width) of the scrollbar for a given browser. This is a by-product of the main functionality.
+
+Some browsers don't provide permanent scrollbars, and instead show them as a temporary overlay while scrolling the page. For those, scroll bar size is reported as 0. That is the default behaviour in mobile browsers, and in current versions of OS X.
+
+`$.scrollbarWidth()` returns a browser-specific constant: how wide the scroll bar is, or would be, if the browser displays it. It does not tell you if scroll bars are actually present in the window. For that kind of info, please [refer to the methods][jQuery.isInView-scrollbar] of another component, [jQuery.isInView][].
+
 ## What does it do that jQuery doesn't?
+
+##### Document size
 
 You might wonder why you'd even need such a plugin. After all, jQuery can detect the dimensions of the document out of the box, just by calling `$(document).width()` and `$(document).height()`. Right?
 
@@ -22,6 +44,17 @@ Well, yes, but jQuery resorts to guesswork. It queries five properties and simpl
 - Results are downright unpredictable in Firefox and IE when both the documentElement and the body are set to anything other than `overflow: visible`.
 
 jQuery.documentSize does not have these limitations. Unlike jQuery, it tests the actual behaviour of the browser. Based on that test, it queries the right property for the document dimensions.
+
+##### Window size
+
+Again, `$(window).width()` and `$(window).height()` seem to work so well, and are used so ubiquitously, that a replacement seems absurd. But the jQuery methods unreliable, to the point of being unusable, on mobile. 
+
+- The jQuery methods are based on the the [layout viewport, rather than the visual viewport][quirksmode-mobile-viewports]. As a result, the numbers don't reflect the zoom state of the mobile browser, nor do they respond to changes of it.
+- In iOS, the jQuery methods assume that the browser chrome (URL bar, tabs) is fully visible all the time. In reality, the browser chrome is minimized as soon as the user begins to scroll for the first time. Depending on the device and iOS version, jQuery underreports the window height by 57px, 60px, or 69px whenever that happens, and it happens a lot.
+
+The related [jQuery bug report][jquery-issue-6724] has been around _since 2010 (!)_, along with a [pull request declined][jquery-pr-764] for all the wrong reasons, and is marked as "cantfix".
+
+So yes, indeed, there is a need for `$.windowWidth()` and `$.windowHeight()`. Their results are based on observable browser behaviour, and not — like most other "fixes" for the iOS problem in particular — on browser sniffing. 
 
 ## Dependencies and setup
 
@@ -52,6 +85,16 @@ Is there a performance penalty for the added accuracy jQuery.documentSize provid
 When the component loads, it tests the browser – jQuery doesn't. The test touches the DOM and takes some extra time. How much exactly, depends on browser and platform, but it is negligible. The test usually takes between 5 and 25 milliseconds, even in IE8 and on mobile devices.
 
 Once that is done, jQuery.documentSize is actually faster than the equivalent jQuery call.
+
+## Precision
+
+Like pretty much all native functions related to size, the ones provided here return pixel values as integers, not floats. Fractional pixel values get lost in the process. That doesn't matter on the desktop, but it does on mobile.
+
+The size of the window, aka the [visual viewport][quirksmode-mobile-viewports], is expressed in CSS pixels. When pinch-zooming into a page on a mobile device, that size shrinks. Zooming can stop at any level, and in most cases, the CSS pixels which are visible on screen – now enlarged – don't line up neatly with the window. The boundary of the window cuts right through them. When zooming in, partial pixels along the edges are the norm, not the exception.
+
+`$.windowWidth()` and `$.windowHeight()` return integers only, so you have to put up with rounding errors when the user zooms in. There is no way around it. Browsers simply don't provide the data for a more accurate return value.
+
+The issue, however, does not affect `$.documentWidth()` and `$.documentHeight()`. The document size is defined in terms of the [layout viewport][quirksmode-mobile-viewports] and therefore unaffected by zooming. Fractional pixel values simply don't occur that way.
 
 ## How is the document size defined?
 
@@ -124,6 +167,11 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release Notes
 
+### v1.1.0
+
+- Added `$.windowWidth()` and `$.windowHeight()`
+- Added `$.scrollbarWidth()`
+
 ### v1.0.2
 
 - Guarded against inherited display styles for the browser test iframe
@@ -166,10 +214,23 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [dist-amd-dev]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.js "jquery.documentsize.js, AMD build"
 [dist-amd-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.min.js "jquery.documentsize.min.js, AMD build"
 
-[setup]: #dependencies-and-setup "Setup"
+[usage]: #usage "Usage"
+[why]: #what-does-it-do-that-jquery-doesnt "What does it do that jQuery doesn't?"
+[setup]: #dependencies-and-setup "Dependencies and setup"
+[browsers]: #browser-support "Browser support"
+[performance]: #performance "Performance"
+[precision]: #precision "Precision"
+[spec]: #how-is-the-document-size-defined "How is the document size defined?"
+[build]: #build-process-and-tests "Build process and tests"
 
 [jQuery]: http://jquery.com/ "jQuery"
 [Zepto]: http://zeptojs.com/ "Zepto.js"
+[jQuery.isInView]: https://github.com/hashchange/jquery.isinview "jQuery.isInView"
+[jQuery.isInView-scrollbar]: https://github.com/hashchange/jquery.isinview#scroll-bar  "jQuery.isInView: Scrollbar-related methods"
+
+[jquery-issue-6724]: http://bugs.jquery.com/ticket/6724 "jQuery Ticket #6724: Wrong $(window).height() in mobile Safari (iPhone)"
+[jquery-pr-764]: https://github.com/jquery/jquery/pull/764 "jQuery Pull Request #764: Fixes #6724: Wrong $(window).height() in Mobile Safari"
+[quirksmode-mobile-viewports]: http://www.quirksmode.org/mobile/viewports2.html "Quirksmode.org: A tale of two viewports"
 
 [w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
 [demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/amd.js "Demo: AMD setup with Zepto"
