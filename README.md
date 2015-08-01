@@ -47,14 +47,14 @@ jQuery.documentSize does not have these limitations. Unlike jQuery, it tests the
 
 ##### Window size
 
-Again, `$(window).width()` and `$(window).height()` seem to work so well, and are used so ubiquitously, that a replacement seems absurd. But the jQuery methods unreliable, to the point of being unusable, on mobile. 
+Again, `$(window).width()` and `$(window).height()` seem to work so well, and are used so ubiquitously, that a replacement seems absurd. But the jQuery methods are unreliable, to the point of being unusable, on mobile. 
 
 - The jQuery methods are based on the the [layout viewport, rather than the visual viewport][quirksmode-mobile-viewports]. As a result, the numbers don't reflect the zoom state of the mobile browser, nor do they respond to changes of it.
 - In iOS, the jQuery methods assume that the browser chrome (URL bar, tabs) is fully visible all the time. In reality, the browser chrome is minimized as soon as the user begins to scroll for the first time. Depending on the device and iOS version, jQuery underreports the window height by 57px, 60px, or 69px whenever that happens, and it happens a lot.
 
 The related [jQuery bug report][jquery-issue-6724] has been around _since 2010 (!)_, along with a [pull request declined][jquery-pr-764] for all the wrong reasons, and is marked as "cantfix".
 
-So yes, indeed, there is a need for `$.windowWidth()` and `$.windowHeight()`. Their results are based on observable browser behaviour, and not — like most other "fixes" for the iOS problem in particular — on browser sniffing. 
+So yes, indeed, there is a need for `$.windowWidth()` and `$.windowHeight()`. Their results are based on observable browser behaviour, and not – like most other "fixes" for the iOS problem in particular – on browser sniffing. 
 
 ## Dependencies and setup
 
