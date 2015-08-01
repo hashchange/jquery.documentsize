@@ -342,6 +342,10 @@ function getIEVersion () {
     return ( ieMatch && ieMatch.length ) ? parseFloat( ieMatch[1] ) : 0;
 }
 
+function isSlimerJs () {
+    return /SlimerJS/.test( navigator.userAgent );
+}
+
 function isPhantomJs () {
     return /PhantomJS/.test( navigator.userAgent );
 }
