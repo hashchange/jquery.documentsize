@@ -4,6 +4,7 @@ requirejs.config( {
 
     paths: {
         'zepto': '../demo/bower_demo_components/zepto/zepto',
+        'underscore': '../demo/bower_demo_components/underscore/underscore',
         'jquery.documentsize': '/dist/amd/jquery.documentsize'
     },
 
@@ -21,6 +22,9 @@ requirejs.config( {
     shim: {
         zepto: {
             exports: '$'
+        },
+        'underscore': {
+            exports: '_'
         }
     }
 
@@ -29,19 +33,179 @@ requirejs.config( {
 require( [
 
     'jquery',
+    'underscore',
     'jquery.documentsize'
 
 ], function ( $ ) {
 
     $( function () {
 
-        $( ".content" )
-            .append( $( '<p class="row"/>' ).text(
-                "The document width is " + $.documentWidth() + "px."
-            ) )
-            .append( $( '<p class="row"/>' ).text(
-                "The document height is " + $.documentHeight() + "px."
-            ) );
+        var $documentHeight = $( ".document .height" ),
+            $documentWidth = $( ".document .width" ),
+
+            $ddeClientHeight = $( ".dde .clientHeight" ),
+            $ddeClientWidth = $( ".dde .clientWidth" ),
+
+            $visualViewportHeight = $( ".visualViewport .height" ),
+            $visualViewportWidth = $( ".visualViewport .width" ),
+
+            $layoutViewportHeight = $( ".layoutViewport .height" ),
+            $layoutViewportWidth = $( ".layoutViewport .width" ),
+
+            $pinchZoomFactor = $( ".zoom .pinch" ),
+
+            $gBCRTop = $( ".gBCR .top" ),
+            $gBCRLeft = $( ".gBCR ._left" ),
+            $gBCRBottom = $( ".gBCR .bottom" ),
+            $gBCRRight = $( ".gBCR ._right" ),
+
+            $logPane = $( ".log" ),
+            initialLogProps = {
+                top: parseFloat( $logPane.css( "top" ) ),
+                left: parseFloat( $logPane.css( "left" ) ),
+
+                paddingTop: parseFloat( $logPane.css( "padding-top" ) ),
+                paddingLeft: parseFloat( $logPane.css( "padding-left" ) ),
+                paddingBottom: parseFloat( $logPane.css( "padding-bottom" ) ),
+                paddingRight: parseFloat( $logPane.css( "padding-right" ) ),
+
+                minWidth: parseFloat( $logPane.css( "min-width" ) ),
+                maxWidth: parseFloat( $logPane.css( "max-width" ) ),
+
+                dtFontSize: parseFloat( $( "dt", $logPane ).css( "font-size" ) ),
+                dtLineHeight: parseFloat( $( "dt", $logPane ).css( "line-height" ) ),
+                dtMinWidth: parseFloat( $( "dt", $logPane ).css( "min-width" ) ),
+
+                ddFontSize: parseFloat( $( "dd", $logPane ).css( "font-size" ) ),
+                ddLineHeight: parseFloat( $( "dd", $logPane ).css( "line-height" ) ),
+
+                dlFontSize: parseFloat( $( "dl", $logPane ).css( "font-size" ) ),
+                dlLineHeight: parseFloat( $( "dl", $logPane ).css( "line-height" ) ),
+                dlMarginBottom: parseFloat( $( "dl", $logPane ).css( "margin-bottom" ) ),
+
+                hrMarginTop: parseFloat( $( "hr", $logPane ).css( "margin-top" ) ),
+                hrMarginBottom: parseFloat( $( "hr", $logPane ).css( "margin-bottom" ) )
+            },
+
+            $content = $( ".content" ),
+
+            dde = document.documentElement,
+            body = document.body,
+
+            $window = $( window ),
+
+
+        $window.on( "scroll", _.throttle( update, 100 ) );
+        $window.on( "resize", _.throttle( update, 100 ) );
+        $window.on( "orientationchange", update );
+        update();
+
+        showLog();
+
+        function update () {
+
+            var zoomFactor = $.windowPinchZoomFactor(),
+                logOffset = {
+                    top:  initialLogProps.top / zoomFactor,
+                    left: initialLogProps.left / zoomFactor
+                };
+
+            logValues();
+            scaleLog();
+            resizeContent();
+            fixPosition( $logPane, logOffset );
+
+        }
+
+        // Makes sure the log always keeps the same size, visually, as the user zooms in and out
+        function scaleLog () {
+
+            var zoomFactor = $.windowPinchZoomFactor(),
+                logProps = {
+
+                    top:           ( initialLogProps.top / zoomFactor ) + "px",
+                    left:          ( initialLogProps.left / zoomFactor ) + "px",
+                    paddingTop:    ( initialLogProps.paddingTop / zoomFactor ) + "px",
+                    paddingLeft:   ( initialLogProps.paddingLeft / zoomFactor ) + "px",
+                    paddingBottom: ( initialLogProps.paddingBottom / zoomFactor ) + "px",
+                    paddingRight:  ( initialLogProps.paddingRight / zoomFactor ) + "px",
+                    minWidth:      ( initialLogProps.minWidth / zoomFactor ) + "px",
+                    maxWidth:      ( initialLogProps.maxWidth / zoomFactor ) + "px"
+
+                },
+                dtProps = {
+                    fontSize:   ( initialLogProps.dtFontSize / zoomFactor ) + "px",
+                    lineHeight: ( initialLogProps.dtLineHeight / zoomFactor ) + "px",
+                    minWidth:   ( initialLogProps.dtMinWidth / zoomFactor ) + "px"
+                },
+                ddProps = {
+                    fontSize:   ( initialLogProps.ddFontSize / zoomFactor ) + "px",
+                    lineHeight: ( initialLogProps.ddLineHeight / zoomFactor ) + "px"
+                },
+                dlProps = {
+                    fontSize:     ( initialLogProps.dlFontSize / zoomFactor ) + "px",
+                    lineHeight:   ( initialLogProps.dlLineHeight / zoomFactor ) + "px",
+                    marginBottom: ( initialLogProps.dlMarginBottom / zoomFactor ) + "px"
+                },
+                hrProps = {
+                    marginTop:    ( initialLogProps.hrMarginTop / zoomFactor ) + "px",
+                    marginBottom: ( initialLogProps.hrMarginBottom / zoomFactor ) + "px"
+                };
+
+            $logPane.css( logProps );
+            $( "dt", $logPane ).css( dtProps );
+            $( "dd", $logPane ).css( ddProps );
+            $( "dl", $logPane ).css( dlProps );
+            $( "hr", $logPane ).css( hrProps );
+        }
+
+        function logValues () {
+
+            var zoomFactor, gBCR;
+
+            $documentHeight.text( $.documentHeight() );
+            $documentWidth.text( $.documentWidth() );
+
+            $ddeClientHeight.text( dde.clientHeight );
+            $ddeClientWidth.text( dde.clientWidth );
+
+            $visualViewportHeight.text( $.windowHeight() );
+            $visualViewportWidth.text( $.windowWidth() );
+
+            $layoutViewportHeight.text( $.windowHeight( { viewport: "layout" } ) );
+            $layoutViewportWidth.text( $.windowWidth( { viewport: "layout" } ) );
+
+            zoomFactor = $.windowPinchZoomFactor();
+            $pinchZoomFactor.text( Math.round( zoomFactor * 10000 ) / 10000 );
+
+            gBCR = body.getBoundingClientRect();
+            $gBCRTop.text( gBCR.top );
+            $gBCRLeft.text( gBCR.left );
+            $gBCRBottom.text( gBCR.bottom );
+            $gBCRRight.text( gBCR.right );
+
+        }
+
+        // Makes the content fit into the layout viewport, width-wise, even though the body is much wider.
+        function resizeContent () {
+            $content.css( { maxWidth: $.windowWidth( { viewport: "layout" } ) } );
+        }
+
+        // Faking "position: fixed" with Javascript. position:fixed didn't work as intended in Chrome on Android, hence
+        // the hack.
+        function fixPosition ( $elem, cssOffset ) {
+            $elem.css( {
+                top: Math.max( dde.scrollTop, body.scrollTop ) + cssOffset.top,
+                left: Math.max( dde.scrollLeft, body.scrollLeft ) + cssOffset.left
+            } );
+        }
+
+        function showLog () {
+            setTimeout( function () {
+                $logPane.show();
+                update();
+            }, 2000 );
+        }
 
     } );
 } );

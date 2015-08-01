@@ -22,17 +22,94 @@
     <!-- check that 'bower install' has been run in the demo dir if bower.json isn't empty -->
     <script src="../bower-check.js"></script>
 
-
-    <section id="header">
+    <section id="header" class="content">
         <h1 class="row">AMD setup with Zepto</h1>
         <p class="row">This page uses the AMD build in the <code>dist</code> directory, not the files in <code>src</code>. In other words, run the <code>grunt</code> command first to build a current version.</p>
     </section>
 
-    <section class="content">
-        <p class="row spacious">The page demonstrates the use of Zepto, instead of jQuery, with the AMD build of jQuery.documentSize. See <code>amd.js</code> for the setup. This page won't work in IE8 and other legacy browsers.</p>
-        <!-- body content here... -->
+    <section class="message content">
+        <p class="row panel callout">On mobile, swipe down to enter minimal UI</p>
     </section>
-    
+
+    <section class="info content">
+        <p class="row spacious">The page demonstrates the use of Zepto, instead of jQuery, with the AMD build of jQuery.documentSize. See <code>amd.js</code> for the setup. This page won't work in IE8 and other legacy browsers.</p>
+    </section>
+
+    <section class="log">
+
+        <dl class="document">
+            <dt>Document height:</dt>
+            <dd class="height"></dd>
+        </dl>
+
+        <dl class="document">
+            <dt>Document width:</dt>
+            <dd class="width"></dd>
+        </dl>
+
+        <hr>
+
+        <dl class="visualViewport">
+            <dt>Visual viewport height:</dt>
+            <dd class="height"></dd>
+        </dl>
+
+        <dl class="visualViewport">
+            <dt>Visual viewport width:</dt>
+            <dd class="width"></dd>
+        </dl>
+
+        <dl class="layoutViewport">
+            <dt>Layout viewport height:</dt>
+            <dd class="height"></dd>
+        </dl>
+
+        <dl class="layoutViewport">
+            <dt>Layout viewport width:</dt>
+            <dd class="width"></dd>
+        </dl>
+
+        <dl class="dde">
+            <dt>d.dE.clientHeight:</dt>
+            <dd class="clientHeight"></dd>
+        </dl>
+
+        <dl class="dde">
+            <dt>d.dE.clientWidth:</dt>
+            <dd class="clientWidth"></dd>
+        </dl>
+
+        <hr>
+
+        <dl class="zoom">
+            <dt>Pinch zoom factor:</dt>
+            <dd class="pinch"></dd>
+        </dl>
+
+        <hr class="gBCR">
+
+        <dl class="gBCR">
+            <dt>body.gBCR().top:</dt>
+            <dd class="top"></dd>
+        </dl>
+
+        <dl class="gBCR">
+            <dt>body.gBCR().left:</dt>
+            <dd class="_left"></dd>
+        </dl>
+
+        <dl class="gBCR">
+            <dt>body.gBCR().bottom:</dt>
+            <dd class="bottom"></dd>
+        </dl>
+
+        <dl class="gBCR">
+            <dt>body.gBCR().right:</dt>
+            <dd class="_right"></dd>
+        </dl>
+
+    </section>
+
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
     <script data-main="amd" src="../bower_demo_components/requirejs/require.js"></script>
 

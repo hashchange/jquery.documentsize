@@ -1,7 +1,18 @@
 @charset "utf-8";
 
+html, body {
+    margin: 0;
+    padding: 0;
+    border: none;
+    height: 100%;
+}
+
 body {
-    margin: 0.25rem;
+    width: 3000px;
+    height: 3000px;
+    outline: 1px solid red;
+    outline-offset: -1px;
+    position: relative;
 }
 
 #header {
@@ -10,5 +21,49 @@ body {
 
 .spacious {
     margin-bottom: 1rem;
+}
+
+.log {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    min-width: 230px;
+    max-width: 280px;
+    padding: 1em;
+    border: 1px dotted grey;
+    background: #fdfdfd;
+    display: none; /* initially */
+}
+
+.message {
+    text-align: center;
+}
+
+.message h1 {
+    max-width: 280px;
+}
+
+.log dt, .log dd {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    font-weight: normal;
+    font-size: 14px;
+}
+
+dl {
+    margin-bottom: 10px;
+}
+
+dt {
+    min-width: 150px;
+}
+
+dd {
+    float: right;
+}
+
+.gBCR {
+    display: none;
 }
 
