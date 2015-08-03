@@ -104,7 +104,7 @@ require( [
 
         function update () {
 
-            var zoomFactor = $.windowPinchZoomFactor(),
+            var zoomFactor = $.pinchZoomFactor(),
                 logOffset = {
                     top:  initialLogProps.top / zoomFactor,
                     left: initialLogProps.left / zoomFactor
@@ -120,7 +120,7 @@ require( [
         // Makes sure the log always keeps the same size, visually, as the user zooms in and out
         function scaleLog () {
 
-            var zoomFactor = $.windowPinchZoomFactor(),
+            var zoomFactor = $.pinchZoomFactor(),
                 logProps = {
 
                     top:           ( initialLogProps.top / zoomFactor ) + "px",
@@ -175,7 +175,7 @@ require( [
             $layoutViewportHeight.text( $.windowHeight( { viewport: "layout" } ) );
             $layoutViewportWidth.text( $.windowWidth( { viewport: "layout" } ) );
 
-            zoomFactor = $.windowPinchZoomFactor();
+            zoomFactor = $.pinchZoomFactor();
             $pinchZoomFactor.text( Math.round( zoomFactor * 10000 ) / 10000 );
 
             gBCR = body.getBoundingClientRect();

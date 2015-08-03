@@ -68,7 +68,7 @@
      * @param   {Window} [_window=window]
      * @returns {number}
      */
-    $.windowPinchZoomFactor = function ( _window ) {
+    $.pinchZoomFactor = function ( _window ) {
         var factor = 1,
             skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth();
 
