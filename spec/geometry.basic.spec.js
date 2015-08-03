@@ -91,6 +91,11 @@
 
         } );
 
+        beforeEach( function () {
+            // Needed before every test if Jasmine output is required to be truly hidden. See hideJasmineOutput().
+            hideJasmineOutput();
+        } );
+
         afterAll( function () {
 
             $html[0].style.cssText = "";
@@ -98,6 +103,7 @@
 
             $content.remove();
             $body.children().show();
+            showJasmineOutput();
 
         } );
 

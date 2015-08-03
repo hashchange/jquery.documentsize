@@ -2,23 +2,28 @@
 (function () {
     "use strict";
 
-    // The file name got its leading underscore because the tests here are supposed to run first. The user must be able
-    // to intervene and enter minimal UI on mobile without having to wait for ages.
+    // The file name got its leading underscore because the tests here **must run first**.
+    //
+    // - During the tests, the browser will snap out of minimal UI (if it has been in minimal UI in the first place),
+    //   and it won't be able to re-enter that state. (See below.)
+    // - Also, the user must be able to intervene, making the browser enter minimal UI on mobile, without having to wait
+    //   for ages.
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //
     //    ATTN Test order matters!
     //
-    //    One of the tests here forces the browser to exit minimal UI. Tests relying on minimal UI can't be run after
-    //    that one.
+    //    Some of the tests here force the browser to exit minimal UI. Tests relying on minimal UI can't be run after
+    //    the first of these tests.
     //
-    //    See the warning above that test:
-    //    "Validated against a window size derived from a known document size" -> "The window is known to be without
-    //    scroll bars."
+    //    For minimal UI to persist, the window content (body size) must be larger than the browser window at all times.
+    //    One moment below that threshold is enough to exit minimal UI for good.
+    //
+    //    See the warning above the first test triggering the transformation.
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    describe( 'windowWidth(), windowHeight() geometry', function () {
+    describe( 'windowWidth(), windowHeight() geometry.', function () {
 
         var msgNoWindowInnerHeightWidth = "Skipped because the browser does not support window.innerHeight and window.innerWidth (either absent or buggy)",
             msgNotMobile = "Skipped because the browser is not running on a phone or tablet",
@@ -44,18 +49,32 @@
 
         afterAll( function () {
 
+            // Resetting the html and body styles.
+            //
+            // DON'T do this after each test. At least the body size setting must persist, keeping the body larger than
+            // the window. This prevents the browser from exiting minimal UI.
+            //
+            // Clean up the other styles individually after each test, as needed.
             $html[0].style.cssText = "";
             $body[0].style.cssText = "";
 
             $body.children().show();
+            showJasmineOutput();
 
         } );
 
         beforeEach( function () {
+            // Make sure the body is larger than the window, allowing minimal UI to persist. Override in individual
+            // tests as needed. (But remember that minimal UI can't be turned on again after that.)
+            $body.height( 10000 );
+
+            // Needed before every test if Jasmine output is required to be truly hidden. See hideJasmineOutput().
+            hideJasmineOutput();
+
             _window.scrollTo( 0, 0 );
         } );
 
-        describeIf( isMobile(), msgNotMobile, 'Mode choice: Switching to minimal UI on mobile (not a test)', function () {
+        describeIf( isMobile(), msgNotMobile, 'Mode choice: Switching to minimal UI on mobile (not a test).', function () {
 
             // Mobile browsers: testing with minimal UI (hidden URL bar, hidden tabs)
             //
@@ -90,7 +109,6 @@
                     mobileHint = "Swipe upwards if you want to test in minimal UI";
 
                 if ( !_hasRun ) {
-                    $body.height( 10000 );
                     $mobileHint = $( "<h1/>" ).text( mobileHint ).css( { padding: "10px", textAlign: "center" } ).prependTo( $body );
                     _hasRun = true;
 
@@ -110,12 +128,19 @@
 
         } );
 
-        describeIf( supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Validated against window.innerHeight, window.innerWidth', function () {
+        describe_noPhantom( 'The window is known to have scroll bars.', function () {
 
-            // NB window.innerHeight, window.innerWidth return the dimensions of the browser window including scroll
-            // bars. We must compensate for that.
+            beforeEach( function () {
 
-            describe_noPhantom( 'The window is known to have scroll bars.', function () {
+                // Setting the body to a huge size, so that scroll bars are guaranteed.
+                $body.contentBox( 10000, 10000 );
+
+            } );
+
+            describeIf( supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
+
+                // NB window.innerHeight, window.innerWidth return the dimensions of the browser window including scroll
+                // bars. We must compensate for that.
 
                 beforeAll( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
@@ -128,11 +153,9 @@
                         .border( 4 )
                         .padding( 2 );
 
-                    // Setting the body to a huge size, so that scroll bars are guaranteed.
-                    $body.contentBox( 10000, 10000 );
                 } );
 
-                describe( '$.windowHeight() === window.innerHeight - browser scroll bar size', function () {
+                describe( '$.windowHeight() matches window.innerHeight, compensated for scroll bar size,', function () {
 
                     it( 'before the window content has been scrolled down', function () {
                         expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
@@ -145,7 +168,7 @@
 
                 } );
 
-                describe( '$.windowWidth() === window.innerWidth - browser scroll bar size', function () {
+                describe( '$.windowWidth() matches window.innerWidth, compensated for scroll bar size,', function () {
 
                     it( 'before the window content has been scrolled down', function () {
                         expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
@@ -160,9 +183,149 @@
 
             } );
 
-            describe( 'The window is known to be without scroll bars.', function () {
+            describeUnless( isAndroid(), msgNotWorkingInAndroid, 'Window size is validated against a known window size, derived from a known document size.', function () {
+
+                // We can establish the window size by making the bottom right corner of the document line up with the
+                // bottom right corner of the window. Here is how it works:
+                //
+                // - We make sure the document is at least as large as the window, and never smaller. So we assign a
+                //   large fixed size to the body. No distorting margins, padding, border on `body` and `html`, please!
+                // - We scroll the window to the max, in both dimensions. As a result, the bottom right corner of the
+                //   body is aligned with the bottom right border of the window.
+                // - We measure bottom right edge position of the body, relative to (0,0) of the window (visual
+                //   viewport). We get it with getBoundingClientRect.bottom and .right.
+                //
+                // That position gives us the real size of the visual viewport. Or rather, it would.
+                //
+                // - When zooming in, the window might show less than a full CSS pixel along each edge. So the real
+                //   result would have to be a float, but both window.innerWidth/.innerHeight and gBCR round it to an
+                //   integer.
+                // - In iOS, the gBCR.bottom value suffers from rounding *errors*, depending on the zoom level.
+                //   Sometimes, the value reported is 1px too small (even at 1:1 zoom), but it can also be 1px too
+                //   large, or be accurate. My experiments have shown that window.innerHeight gets it right (apart from
+                //   the lack of floating-point precision), while gBCR doesn't.
+                // - For that reason, we have to allow a discrepancy of +/- 1px during the test.
+                //
+                // We test the window size after scrolling by making sure the body is larger than the window. And we
+                // test the window size without scrolling by making the body smaller than the window, and positioning
+                // the body in the lower right corner. (Happens further below, in "window without scroll bars" spec.)
+
+                // NB Android:
+                // -----------
+                //
+                // These tests don't work in Android because getBoundingClientRect() behaves differently there.
+                //
+                // In iOs, the values returned by gBCR are relative to the visual viewport, ie the real size of the
+                // window, expressed in CSS pixels. In Android, however, they are relative to the layout viewport and
+                // therefore don't reflect zoom state or the real, visible window size.
+                //
+                // To see it in action, play with http://jsbin.com/xaqaya/3
+
+                describe( 'The window has been scrolled.', function () {
+
+                    beforeEach( function ( done ) {
+                        $html.contentOnly();
+                        $body.contentOnly();
+
+                        // Setting the body to a huge size, so that scroll bars are guaranteed.
+                        $body.contentBox( 10000, 10000 );
+
+                        // Scrolling all the way out to the scrolling maximum, and then some.
+                        //
+                        // In iOS, because of rubber-band scrolling, that extreme point is actually reached initially.
+                        // We need to allow some time for the content to bounce back and reach its final position.
+                        _window.scrollTo( 15000, 15000 );
+                        setTimeout( done, 500 );
+                    } );
+
+                    it( '$.windowWidth() matches the measured window width', function () {
+                        // NB This test would fail in iOS without hideJasmineOutput() in a beforeEach call.
+                        var expected =_document.body.getBoundingClientRect().right;
+                        expect( $.windowWidth( _window ) ).toBeWithinRange( expected - 1, expected + 1 );
+                    } );
+
+                    it( '$.windowHeight() matches the measured window height', function () {
+                        var expected =_document.body.getBoundingClientRect().bottom;
+                        expect( $.windowHeight( _window ) ).toBeWithinRange( expected - 1, expected + 1 );
+                    } );
+
+                } );
+
+            } );
+
+            describeIf( isMobile(), msgNotMobile, 'Page is zoomed in (pinch zoom).', function () {
+
+                // As a result of zooming in, the window has scroll bars, too.
+
+                // Zooming out is tested further below, in the "window without scroll bars" spec.
+
+                var _storedMetaViewport;
 
                 beforeAll( function () {
+                    _storedMetaViewport = $( 'meta[name="viewport"]' ).attr( "content" );
+                } );
+
+                afterAll( function () {
+                    // Reset zoom, restore original meta viewport tag
+                    $( 'meta[name="viewport"]' ).attr( "content", _storedMetaViewport );
+                } );
+
+                beforeEach( function () {
+                    // Make sure we definitely get scroll bars, just in case
+                    $body.contentBox( 10000, 10000 );
+
+                    // Zoom in to 300%
+                    $( 'meta[name="viewport"]' ).attr( "content", "width=device-width, initial-scale=3.0" );
+                } );
+
+
+                describe( '$.windowHeight() matches window.innerHeight, compensated for scroll bar size,', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth() matches window.innerWidth, compensated for scroll bar size,', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
+                    } );
+
+                } );
+
+            } );
+
+        } );
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //
+        //    ATTN The following test makes the browser exit minimal UI in iOS!
+        //
+        //    As soon as the body is smaller than the window, or exactly as large, the browser snaps out of the
+        //    minimal UI and displays the URL bar etc. There is NO WAY to re-enter minimal UI programmatically.
+        //    See http://output.jsbin.com/yunisu/4
+        //
+        //    NO TESTS EXPECTING MINIMAL UI BEYOND THIS POINT!
+        //
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        describe( 'The window is known to be without scroll bars.', function () {
+
+            describeIf( supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
+
+                beforeEach( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
                     $html
                         .margin( 1 )
@@ -177,109 +340,28 @@
                     $body.contentBox( 100, 100 );
                 } );
 
-                it( '$.windowHeight() === window.innerHeight', function () {
+                it( '$.windowHeight() equals window.innerHeight', function () {
                     expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight );
                 } );
 
-                it( '$.windowWidth() === window.innerWidth', function () {
+                it( '$.windowWidth() equals window.innerWidth', function () {
                     expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth );
                 } );
 
             } );
 
-        } );
+            describeUnless( isAndroid(), msgNotWorkingInAndroid, 'Window size is validated against a known window size, derived from a known document size.', function () {
 
-        describeUnless( isAndroid(), msgNotWorkingInAndroid, 'Validated against a window size derived from a known document size', function () {
-
-            // We can establish the window size by making the bottom right corner of the document line up with the
-            // bottom right corner of the window. Here is how it works:
-            //
-            // - We make sure the document is at least as large as the window, and never smaller. So we assign a large
-            //   fixed size to the body. No distorting margins, padding, border on `body` and `html`, please!
-            // - We scroll the window to the max, in both dimensions. As a result, the bottom right corner of the body
-            //   is aligned with the bottom right border of the window.
-            // - We measure bottom right edge position of the body, relative to (0,0) of the window (visual viewport).
-            //   We get it with getBoundingClientRect.bottom and .right.
-            //
-            // That position gives us the real size of the visual viewport. Or rather, it would.
-            //
-            // - When zooming in, the window might show less than a full CSS pixel along each edge. So the real result
-            //   would have to be a float, but both window.innerWidth/.innerHeight and gBCR round it to an integer.
-            // - In iOS, the gBCR.bottom value suffers from rounding *errors*, depending on the zoom level. Sometimes,
-            //   the value reported is 1px too small (even at 1:1 zoom), but it can also be 1px too large, or be
-            //   accurate. My experiments have shown that window.innerHeight gets it right (apart from the lack of
-            //   floating-point precision).
-            // - For that reason, we have to allow a discrepancy of +/- 1px during the test.
-            //
-            // We test the window size after scrolling by making sure the body is larger than the window. And we test
-            // the window size without scrolling by making the body smaller than the window, but positioning it in the
-            // lower right corner.
-
-            // NB Android:
-            // -----------
-            //
-            // These tests don't work in Android because getBoundingClientRect() behaves differently there. In iOs, the
-            // values returned by gBCR are relative to the visual viewport, ie the real size of the window, expressed in
-            // CSS pixels. In Android, however, they are relative to the layout viewport and therefore don't reflect
-            // zoom state or the real, visible window size.
-            //
-            // To see it in action, play with http://jsbin.com/xaqaya/3
-
-            beforeAll( function () {
-                $html.contentOnly();
-                $body.contentOnly();
-
-            } );
-
-            describe_noPhantom( 'The window is known to have scroll bars, and has been scrolled.', function () {
-
-                beforeAll( function () {
-                    // Setting the body to a huge size, so that scroll bars are guaranteed.
-                    $body.contentBox( 10000, 10000 );
-                } );
+                // See notes for the corresponding test with scroll bars.
 
                 beforeEach( function ( done ) {
-                    // Scrolling all the way out to the scrolling maximum, and then some.
-                    //
-                    // In iOS, because of rubber-band scrolling, that extreme point is actually reached initially. We
-                    // need to allow some time for the content to bounce back and reach its final position.
-                    _window.scrollTo( 15000, 15000 );
-                    setTimeout( done, 500 );
-                } );
+                    $html.contentOnly();
+                    $body.contentOnly();
 
-                it( '$.windowWidth() matches the measured window width', function () {
-                    var expected =_document.body.getBoundingClientRect().right;
-                    expect( $.windowWidth( _window ) ).toBeWithinRange( expected - 1, expected + 1 );
-                } );
-
-                it( '$.windowHeight() matches the measured window height', function () {
-                    var expected =_document.body.getBoundingClientRect().bottom;
-                    expect( $.windowHeight( _window ) ).toBeWithinRange( expected - 1, expected + 1 );
-                } );
-
-            } );
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //
-            //    ATTN The following test makes the browser exit minimal UI in iOS!
-            //
-            //    As soon as the body is smaller than the window, or exactly as large, the browser snaps out of the
-            //    minimal UI and displays the URL bar etc. There is NO WAY to re-enter minimal UI programmatically.
-            //    See http://output.jsbin.com/yunisu/4
-            //
-            //    NO TESTS EXPECTING MINIMAL UI BEYOND THIS POINT!
-            //
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            describe( 'The window is known to be without scroll bars.', function () {
-
-                beforeAll( function () {
                     $body
                         .contentBox( 100, 100 )
                         .css( { position: "absolute", bottom: 0, right: 0 } );
-                } );
 
-                beforeEach( function ( done ) {
                     // We need to give the browser some time to exit minimal UI in iOS. Without a timeout, the test
                     // would fail.
                     setTimeout( done, 100 );
@@ -297,25 +379,16 @@
 
             } );
 
-        } );
+            describeIf( isMobile(), msgNotMobile, 'Page is zoomed out to the maximum (pinch zoom).', function () {
 
-        describeIf( isMobile(), msgNotMobile, 'Page is pinch-zoomed in or out', function () {
+                // As a result, the page doesn't have scroll bars.
 
-            var _storedMetaViewport;
+                // Zooming in is tested further above, in the "window with scroll bars" spec.
 
-            describe( 'Page is zoomed in', function () {
-
-                // As a result, the window has scroll bars, too.
+                var _storedMetaViewport;
 
                 beforeAll( function () {
-                    // Make sure we definitely get scroll bars, just in case
-                    $body.contentBox( 10000, 10000 );
-
-                    // Zoom in to 300%
-                    var $metaViewport = $( 'meta[name="viewport"]' );
-
-                    _storedMetaViewport = $metaViewport.attr( "content" );
-                    $metaViewport.attr( "content", "width=device-width, initial-scale=3.0" );
+                    _storedMetaViewport = $( 'meta[name="viewport"]' ).attr( "content" );
                 } );
 
                 afterAll( function () {
@@ -323,39 +396,7 @@
                     $( 'meta[name="viewport"]' ).attr( "content", _storedMetaViewport );
                 } );
 
-                describe( '$.windowHeight() === window.innerHeight - browser scroll bar size', function () {
-
-                    it( 'before the window content has been scrolled down', function () {
-                        expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
-                    } );
-
-                    it( 'after the window content has been scrolled down', function () {
-                        _window.scrollTo( 0, 1000 );
-                        expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
-                    } );
-
-                } );
-
-                describe( '$.windowWidth() === window.innerWidth - browser scroll bar size', function () {
-
-                    it( 'before the window content has been scrolled down', function () {
-                        expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
-                    } );
-
-                    it( 'after the window content has been scrolled down', function () {
-                        _window.scrollTo( 0, 500 );
-                        expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
-                    } );
-
-                } );
-
-            } );
-
-            describe( 'Page is zoomed out to the maximum', function () {
-
-                // As a result, the page doesn't have scroll bars.
-
-                beforeAll( function () {
+                beforeEach( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
                     $html
                         .margin( 1 )
@@ -370,29 +411,23 @@
                     $body.contentBox( 100, 100 );
 
                     // Zoom out to 50%
-                    var $metaViewport = $( 'meta[name="viewport"]' );
-
-                    _storedMetaViewport = $metaViewport.attr( "content" );
-                    $metaViewport.attr( "content", "width=device-width, initial-scale=0.5" );
+                    $( 'meta[name="viewport"]' ).attr( "content", "width=device-width, initial-scale=0.5" );
 
                 } );
 
-                afterAll( function () {
-                    // Reset zoom, restore original meta viewport tag
-                    $( 'meta[name="viewport"]' ).attr( "content", _storedMetaViewport );
-                } );
 
-                it( '$.windowHeight() === window.innerHeight', function () {
+                it( '$.windowHeight() equals window.innerHeight', function () {
                     expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight );
                 } );
 
-                it( '$.windowWidth() === window.innerWidth', function () {
+                it( '$.windowWidth() equals window.innerWidth', function () {
                     expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth );
                 } );
 
             } );
 
         } );
+
     } );
 
 })();
