@@ -74,14 +74,16 @@
 
         if ( ! skip ) {
 
-            // Increase accuracy by examining the longer side (unless the browser supports sub-pixel accuracy anyway).
+            // Calculate the zoom factor based on the width, not the height. getPinchZoomFactor() does just that.
             //
-            // A call to getPinchZoomFactor() examines the width, and hence is OK for landscape orientation.
-            if ( supportsSubpixelAccuracy() || isLandscapeOrientation( _window ) ) {
-                factor = getPinchZoomFactor( _window );
-            } else {
-                factor = ( _window || window ).document.documentElement.clientHeight / getWindowSize( "Height", { viewport: "layout" } );
-            }
+            // It would be more accurate to use the longest side for the calculation, keeping the effect of rounding
+            // errors low (unless the browser supports sub-pixel accuracy anyway).
+            //
+            // Unfortunately, iOS does not allow that approach. Switching from normal to minimal UI is not reflected in
+            // the clientHeight, so the zoom factor would seem to change when the UI disappears (even though in reality,
+            // it doesn't). We have to use the width, irrespective of orientation.
+
+            factor = getPinchZoomFactor( _window );
 
         }
 
@@ -594,24 +596,6 @@
      */
     function supportsSubpixelAccuracy () {
         return !!_supportsSubpixelAccuracy;
-    }
-
-    /**
-     * Returns whether or not the window is in landscape orientation.
-     *
-     * A square window still passes the test (is considered landscape).
-     *
-     * Does not use window.orientation even where available. It would presumably return wrong results when dealing with
-     * a secondary window, e.g. inside an iframe.
-     *
-     * @param   {Window} [_window=window]
-     * @returns {boolean}
-     */
-    function isLandscapeOrientation ( _window ) {
-        var dde = ( _window || window ).document.documentElement;
-
-        _window || ( _window = window );
-        return supportsWindowInnerWidth() ? getWindowInnerWidth( _window ) >= getWindowInnerHeight( _window ) : dde.clientWidth >= dde.clientHeight;
     }
 
     function isWindow ( value ) {
