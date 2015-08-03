@@ -69,25 +69,17 @@
      * @returns {number}
      */
     $.pinchZoomFactor = function ( _window ) {
-        var factor = 1,
-            skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth();
 
-        if ( ! skip ) {
+        // Calculate the zoom factor based on the width, not the height. getPinchZoomFactor() does just that.
+        //
+        // It would be more accurate to use the longest side for the calculation, keeping the effect of rounding errors
+        // low (unless the browser supports sub-pixel accuracy anyway).
+        //
+        // Unfortunately, iOS does not allow that approach. Switching from normal to minimal UI is not reflected in the
+        // clientHeight, so the zoom factor would seem to change when the UI disappears (even though in reality, it
+        // doesn't). We have to use the width, irrespective of orientation.
 
-            // Calculate the zoom factor based on the width, not the height. getPinchZoomFactor() does just that.
-            //
-            // It would be more accurate to use the longest side for the calculation, keeping the effect of rounding
-            // errors low (unless the browser supports sub-pixel accuracy anyway).
-            //
-            // Unfortunately, iOS does not allow that approach. Switching from normal to minimal UI is not reflected in
-            // the clientHeight, so the zoom factor would seem to change when the UI disappears (even though in reality,
-            // it doesn't). We have to use the width, irrespective of orientation.
-
-            factor = getPinchZoomFactor( _window );
-
-        }
-
-        return factor;
+        return getPinchZoomFactor( _window );
     };
 
     /**
@@ -192,25 +184,33 @@
     function getPinchZoomFactor ( _window, options ) {
         var ddeClientWidth, windowInnerWidth,
             asRange = options && options.asRange,
-            factors = {},
+            factors = {
+                calculated: 1,
+                min: 1,
+                max: 1
+            },
             skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth();
 
-        _window || ( _window = window );
-        ddeClientWidth = _window.document.documentElement.clientWidth;
-        windowInnerWidth = getWindowInnerWidth( _window );
+        if ( !skip ) {
 
-        // Calculate the zoom factor, assuming window.innerWidth is precise (no rounding errors).
-        factors.calculated = skip ? 1 : ddeClientWidth / windowInnerWidth;
+            _window || ( _window = window );
+            ddeClientWidth = _window.document.documentElement.clientWidth;
+            windowInnerWidth = getWindowInnerWidth( _window );
 
-        // If requested, determine the minimum and maximum value of the zoom factor in the presence of rounding errors.
-        if ( asRange ) {
-            if ( skip || supportsSubpixelAccuracy() ) {
-                // No need to take rounding errors into account
-                factors.min = factors.max = factors.calculated;
-            } else {
-                factors.min = ddeClientWidth / ( windowInnerWidth + 1 );
-                factors.max = ddeClientWidth / ( windowInnerWidth - 1 );
+            // Calculate the zoom factor, assuming window.innerWidth is precise (no rounding errors).
+            factors.calculated = ddeClientWidth / windowInnerWidth;
+
+            // If requested, determine the minimum and maximum value of the zoom factor in the presence of rounding errors.
+            if ( asRange ) {
+                if ( supportsSubpixelAccuracy() ) {
+                    // No need to take rounding errors into account
+                    factors.min = factors.max = factors.calculated;
+                } else {
+                    factors.min = ddeClientWidth / ( windowInnerWidth + 1 );
+                    factors.max = ddeClientWidth / ( windowInnerWidth - 1 );
+                }
             }
+
         }
 
         return asRange ? factors : factors.calculated;
