@@ -137,7 +137,7 @@
                 // In Android, the height we get from ddE.clientHeight and the one calculated from window.innerHeight
                 // should be the same, except for rounding errors in the calculation. So basically, we could just set
                 // any calculated value to the clientHeight, no matter how large the difference is. (That is, if we even
-                // end up here - in Chrome on Android, for instance, we have sub-pixel accuracy.)
+                // end up here - in some versions of Chrome on Android, for instance, we have sub-pixel accuracy.)
                 //
                 // Not so in iOS. In minimal UI, the real layout viewport may be larger than the one reported by
                 // clientHeight, by about 60px. So we need to impose reasonable limits on what is considered to be near

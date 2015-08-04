@@ -18,19 +18,49 @@ For specific documents, e.g. in an embedded iframe or a child window you have ac
 
 ##### Window size
 
-Same syntax here. Call `$.windowWidth()` or `$.windowHeight()` to get the results for the global `window`.
+Call `$.windowWidth()` or `$.windowHeight()` to get the results for the global `window`. 
+
+###### Size of the visual viewport
+ 
+By default, the size of the [visual viewport][quirksmode-mobile-viewports] is returned. That is the area you actually see in the browser window. The visual viewport responds to pinch zooming on mobile devices, it grows or shrinks as the user zooms in and out. Its size is expressed in CSS pixels.
+
+You can ask for the visual viewport explicitly with the `viewport` option: `$.windowWidth( { viewport: "visual" } )`. You can also use a shorter syntax, `$.windowWidth( "visual" )`, or simply leave out the argument altogether.
+
+###### Size of the layout viewport
+
+Alternatively, you can query the size of the [layout viewport][quirksmode-mobile-viewports]. That is the viewport which mobile browsers use to calculate the layout. They refer to it when evaluating CSS rules like `body { height: 100%; }`. The size of this viewport is also expressed in CSS pixels, but it does not respond to pinch zooming. 
+
+Get it with `$.windowWidth( { viewport: "layout" } )`, or simply with `$.windowWidth( "layout" )`. Likewise for height.
+
+On the **desktop**, there is no distinction between a visual and a layout viewport because desktop browsers don't implement pinch zooming (desktop page zooming is a different beast entirely). In that environment, the `viewport` option is without effect. No matter which option you pass to a desktop browser, it returns the same result.
+
+###### Other windows than the global one
 
 For specific windows, e.g. an embedded iframe or a child window you have access to, pass the window as an argument: `$.windowWidth( myIframe.contentWindow )` or `$.windowHeight( myIframe.contentWindow )`.
 
-The return value is rounded to integer, fractional CSS pixels cannot be captured. See the notes on [precision, below][precision].
+If you pass in a viewport preference and a custom window at the same time, the order of the arguments doesn't matter. Call `$.windowWidth( "visual", iframeWindow )`, or `$.windowWidth( iframeWindow, { viewport: "visual" } )`, or any other variation as you wish.
+
+###### Rounding errors and precision
+
+The return value is rounded to integer on most platforms. Fractional CSS pixels cannot be captured that way. It may sound negligible, but sub-pixel precision can actually matter – see the notes on [precision, below][precision], for more.
+
+##### Zoom level
+
+This method is a convenient by-product of the window size calculation. Call `$.pinchZoomFactor()` to get, you guessed it, the pinch zoom factor on a mobile device. 
+
+Values greater than one mean the user has zoomed in and enlarged the content. A factor of less than one stands for zooming out.
+
+The method is all about pinch zooming and does not convey any information about page zoom in a desktop browser.
+
+As with the other methods, you can pass in a custom window: `$.pinchZoomFactor( _window )`. It is unlikely you'll ever need to do it, though.
 
 ##### Scroll bar size
 
-Call `$.scrollbarWidth()` to retrieve the size (width) of the scrollbar for a given browser. This is a by-product of the main functionality.
+Call `$.scrollbarWidth()` to retrieve the size (width) of the scrollbar for a given browser. Again, this is a by-product of the main functionality.
 
-Some browsers don't provide permanent scrollbars, and instead show them as a temporary overlay while scrolling the page. For those, scroll bar size is reported as 0. That is the default behaviour in mobile browsers, and in current versions of OS X.
+Some browsers don't provide permanent scrollbars, and instead show them as a temporary overlay while scrolling the page. In that case, scroll bar size is reported as 0. Showing zero-width overlays is typical of mobile browsers, and also the default in current versions of OS X.
 
-`$.scrollbarWidth()` returns a browser-specific constant: how wide the scroll bar is, or would be, if the browser displays it. It does not tell you if scroll bars are actually present in the window. For that kind of info, please [refer to the methods][jQuery.isInView-scrollbar] of another component, [jQuery.isInView][].
+Watch out, though: `$.scrollbarWidth()` returns a browser-specific constant. It reports how wide the scroll bar is, or would be, if the browser displays it. It does **not** tell you if scroll bars are actually present in the window. For that kind of info, please [refer to the methods][jQuery.isInView-scrollbar] of another component, [jQuery.isInView][].
 
 ## What does it do that jQuery doesn't?
 
@@ -90,11 +120,19 @@ Once that is done, jQuery.documentSize is actually faster than the equivalent jQ
 
 Like pretty much all native functions related to size, the ones provided here return pixel values as integers, not floats. Fractional pixel values get lost in the process. That doesn't matter on the desktop, but it does on mobile.
 
+###### Window size
+
 The size of the window, aka the [visual viewport][quirksmode-mobile-viewports], is expressed in CSS pixels. When pinch-zooming into a page on a mobile device, that size shrinks. Zooming can stop at any level, and in most cases, the CSS pixels which are visible on screen – now enlarged – don't line up neatly with the window. The boundary of the window cuts right through them. When zooming in, partial pixels along the edges are the norm, not the exception.
 
-`$.windowWidth()` and `$.windowHeight()` return integers only, so you have to put up with rounding errors when the user zooms in. There is no way around it. Browsers simply don't provide the data for a more accurate return value.
+In most browsers, `$.windowWidth()` and `$.windowHeight()` return integers only, so you have to put up with rounding errors when the user zooms in. There is no way around it. Browsers simply don't provide the data for a more accurate return value.
 
-The issue, however, does not affect `$.documentWidth()` and `$.documentHeight()`. The document size is defined in terms of the [layout viewport][quirksmode-mobile-viewports] and therefore unaffected by zooming. Fractional pixel values simply don't occur that way.
+The good news is that the **layout viewport** is unaffected, values are precise. For the **visual viewport**, the maximum rounding error is ±1&nbsp;CSS pixel.
+
+###### Document size
+
+The issues around a lack of accuracy do not affect `$.documentWidth()` and `$.documentHeight()`. Their return value is always precise.
+
+The document size is defined in terms of the [layout viewport][quirksmode-mobile-viewports] and therefore unaffected by zooming. Fractional pixel values simply don't occur that way.
 
 ## How is the document size defined?
 
@@ -166,6 +204,11 @@ In case anything about the test and build process needs to be changed, have a lo
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
 ## Release Notes
+
+### v1.2.0
+
+- Added a `viewport` option and support for the layout viewport to `$.windowWidth()` and `$.windowHeight()`
+- Added `$.pinchZoomFactor()`
 
 ### v1.1.0
 
