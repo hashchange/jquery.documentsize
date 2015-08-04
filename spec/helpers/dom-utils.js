@@ -2,6 +2,8 @@
 // Depends on basic-utils.js
 // !!!!!!!!!!!!!!!!!!!!!!!!!!
 
+var _originalMetaViewport = {};
+
 /**
  * Creates a child window, including a document with an HTML 5 doctype, UFT-8 charset, head, title, and body tags.
  * Returns the handle, or undefined if window creation fails.
@@ -258,6 +260,102 @@ function forceReflow ( element ) {
 
     $element.css( { display: "none" } ).height();
     $element.css( { display: "block" } );
+}
+
+/**
+ * Makes sure the meta viewport tag exists. Does not modify existing settings. Creates the tag if missing, with the
+ * default setting ("width=device-width, initial-scale=1.0").
+ *
+ * Returns the element.
+ *
+ * @param   {Window} [_window=window]
+ * @returns {HTMLElement}
+ */
+function ensureMetaViewport ( _window ) {
+    var _document = ( _window || window ).document,
+        head = _document.head || _document.getElementsByTagName( "head" )[0],
+        query = _document.querySelectorAll( 'meta[name="viewport"]' ),
+        el = query.length ? query[0] : undefined;
+
+    if ( !el ) {
+        el = _document.createElement( "meta" );
+        el.name = "viewport";
+        el.content = "width=device-width, initial-scale=1.0";
+        head.appendChild( el );
+    }
+
+    return el;
+}
+
+/**
+ * Makes sure the meta viewport tag exists and is set to the default settings ("width=device-width, initial-scale=1.0").
+ *
+ * Returns the element.
+ *
+ * @param   {Window} [_window=window]
+ * @returns {HTMLElement}
+ */
+function ensureDefaultMetaViewport ( _window ) {
+    var el = ensureMetaViewport( _window );
+
+    el.content = "width=device-width, initial-scale=1.0";
+    return el;
+}
+
+/**
+ * Sets the zoom level (pinch zooming on mobile). Modifies the meta viewport tag for that. Makes sure the original value
+ * is kept around, for use by restoreMetaViewport().
+ *
+ * Always use it in conjunction with restoreMetaViewport().
+ *
+ * @param   {number|string} zoomLevel
+ * @param   {Window}        [_window=window]
+ * @returns {HTMLElement}
+ */
+function setMetaViewportZoom ( zoomLevel, _window ) {
+    var el = ensureMetaViewport( _window );
+
+    _window || ( _window = window );
+
+    if ( _originalMetaViewport[_window] === undefined ) _originalMetaViewport[_window] = el.content || "";
+    el.content = "width=device-width, initial-scale=" + zoomLevel;
+    return el;
+}
+
+/**
+ * Restores the original meta viewport tag after it has been modified by setMetaViewportZoom(). Does nothing if there is
+ * no preceding setMetaViewportZoom() call to be reverted.
+ *
+ * If the meta viewport tag didn't exist initially, but has been created by setMetaViewportZoom(), it does not get
+ * deleted. It is reset to the default meta tag instead.
+ *
+ * NB If the tag did not exist previously, deleting it would be true to the original HTML - but it would also be
+ * misleading. Browsers do not revert to their original state. According to Peter Paul Koch, the tag can't be unset by
+ * removing it. See Peter Paul Koch, The Mobile Web Handbook, Ch. 3 "Viewports", Section "Changing the Meta Viewport
+ * Tag".
+ *
+ * @param   {Window} [_window=window]
+ */
+function restoreMetaViewport ( _window ) {
+    var el;
+
+    _window || ( _window = window );
+
+    if ( _originalMetaViewport[_window] !== undefined ) {
+
+        if ( _originalMetaViewport[_window] ) {
+            // A setting has been captured
+            el = ensureMetaViewport( _window );
+            el.content = _originalMetaViewport[_window];
+        } else {
+            // The tag did not exist previously but has been created and manipulated. (The _originalMetaViewport entry
+            // for the _window is set to "", not undefined, in this case.)
+            ensureDefaultMetaViewport();
+        }
+
+        // Remove the captured setting.
+        delete _originalMetaViewport[_window];
+    }
 }
 
 /**

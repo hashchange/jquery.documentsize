@@ -45,6 +45,7 @@
             $html.contentOnly().overflowAll( "visible" );
             $body.contentOnly().overflowAll( "visible" );
 
+            ensureDefaultMetaViewport();
         } );
 
         afterAll( function () {
@@ -61,6 +62,7 @@
             $body.children().show();
             showJasmineOutput();
 
+            ensureDefaultMetaViewport();
         } );
 
         beforeEach( function () {
@@ -88,19 +90,6 @@
             // See http://stackoverflow.com/a/18917939/508355
 
             var _hasRun = false;
-
-            beforeAll( function () {
-                $( document.body ).children().hide();
-            } );
-
-            afterAll( function () {
-
-                $html[0].style.cssText = "";
-                $body[0].style.cssText = "";
-
-                $body.children().show();
-
-            } );
 
             // beforeAll can't be made async, so we have to fake it with a pseudo forEach.
             beforeEach( function ( done ) {
@@ -253,31 +242,119 @@
 
             } );
 
+            describe( 'Window size with option viewport: "visual" is the same as window size without a viewport argument', function () {
+
+                beforeAll( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 64 )
+                        .border( 32 )
+                        .padding( 16 );
+                    $body
+                        .margin( 8 )
+                        .border( 4 )
+                        .padding( 2 );
+
+                } );
+
+                describe( '$.windowHeight( { viewport: "visual" } ) equals $.windowHeight(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth( { viewport: "visual" } ) equals $.windowWidth(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                } );
+
+            } );
+
+            describe( 'At 1:1 zoom, window size with option viewport: "layout" is the same as window size without a viewport argument', function () {
+
+                beforeAll( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 64 )
+                        .border( 32 )
+                        .padding( 16 );
+                    $body
+                        .margin( 8 )
+                        .border( 4 )
+                        .padding( 2 );
+
+                } );
+
+                beforeEach( function () {
+                    setMetaViewportZoom( 1 );
+                } );
+
+                afterAll( function () {
+                    restoreMetaViewport();
+                } );
+
+                describe( '$.windowHeight( { viewport: "layout" } ) equals $.windowHeight(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( { viewport: "layout" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( { viewport: "layout" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth( { viewport: "layout" } ) equals $.windowWidth(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                } );
+
+            } );
+
+
             describeIf( isMobile(), msgNotMobile, 'Page is zoomed in (pinch zoom).', function () {
 
                 // As a result of zooming in, the window has scroll bars, too.
 
                 // Zooming out is tested further below, in the "window without scroll bars" spec.
 
-                var _storedMetaViewport;
-
-                beforeAll( function () {
-                    _storedMetaViewport = $( 'meta[name="viewport"]' ).attr( "content" );
-                } );
-
-                afterAll( function () {
-                    // Reset zoom, restore original meta viewport tag
-                    $( 'meta[name="viewport"]' ).attr( "content", _storedMetaViewport );
-                } );
-
                 beforeEach( function () {
                     // Make sure we definitely get scroll bars, just in case
                     $body.contentBox( 10000, 10000 );
 
                     // Zoom in to 300%
-                    $( 'meta[name="viewport"]' ).attr( "content", "width=device-width, initial-scale=3.0" );
+                    setMetaViewportZoom( 3 );
                 } );
 
+                afterAll( function () {
+                    // Reset zoom, restore original meta viewport tag
+                    restoreMetaViewport();
+                } );
 
                 describe( '$.windowHeight() matches window.innerHeight, compensated for scroll bar size,', function () {
 
@@ -301,6 +378,87 @@
                     it( 'after the window content has been scrolled down', function () {
                         _window.scrollTo( 0, 500 );
                         expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
+                    } );
+
+                } );
+
+                describe( '$.windowHeight( { viewport: "visual" } ) equals $.windowHeight(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth( { viewport: "visual" } ) equals $.windowWidth(),', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                    } );
+
+                } );
+
+                describe( '$.windowHeight( { viewport: "layout" } ) equals the layout viewport height, derived from document.documentElement.clientHeight and adjusted for minimal UI if applicable,', function () {
+
+                    // For the expected height, we can't just read the value of ddE.clientHeight and be done with it. In
+                    // iOS, that value misses the enlargement of the browser window when we are in minimal UI.
+                    //
+                    // Instead, we have to calculate the expected height, based on the expected width and the aspect
+                    // ratio of the window.
+                    //
+                    // NB Suppressing rounding errors:
+                    //
+                    // If the calculated height is really close to the clientHeight, the difference can only have been
+                    // caused by rounding errors in the calculation, so we take the browser-provided value instead.
+
+                    it( 'before the window content has been scrolled down', function () {
+                        var aspectRatio = $.windowHeight( _window ) / $.windowWidth( _window ),
+                            calculatedHeight = _document.documentElement.clientWidth * aspectRatio,
+                            clientHeight = _document.documentElement.clientHeight,
+
+                            expected = ( clientHeight > calculatedHeight - 4 && clientHeight < calculatedHeight + 4 ) ? clientHeight : calculatedHeight;
+
+                        // Allow for rounding errors in the value returned by $.windowHeight() (tolerance +/-1px).
+                        expect( $.windowHeight( { viewport: "layout" }, _window ) ).toBeWithinRange( expected - 1, expected + 1 );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        var aspectRatio = $.windowHeight( _window ) / $.windowWidth( _window ),
+                            calculatedHeight = _document.documentElement.clientWidth * aspectRatio,
+                            clientHeight = _document.documentElement.clientHeight,
+
+                            expected = ( clientHeight > calculatedHeight - 4 && clientHeight < calculatedHeight + 4 ) ? clientHeight : calculatedHeight;
+
+                        _window.scrollTo( 0, 1000 );
+
+                        // Allow for rounding errors in the value returned by $.windowHeight() (tolerance +/-1px).
+                        expect( $.windowHeight( { viewport: "layout" }, _window ) ).toBeWithinRange( expected - 1, expected + 1 );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth( { viewport: "layout" } ) equals the layout viewport width, document.documentElement.clientWidth,', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        var expected = _document.documentElement.clientWidth;
+                        expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( expected );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+
+                        var expected = _document.documentElement.clientWidth;
+                        expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( expected );
                     } );
 
                 } );
@@ -379,22 +537,71 @@
 
             } );
 
+            describe( 'Window size with option viewport: "visual" is the same as window size without a viewport argument', function () {
+
+                beforeEach( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+                    $body
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+
+                    // Setting the body to a very small size, so that scroll bars are guaranteed to be absent.
+                    $body.contentBox( 100, 100 );
+                } );
+
+                it( '$.windowHeight( { viewport: "visual" } ) equals $.windowHeight()', function () {
+                    expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                } );
+
+                it( '$.windowWidth( { viewport: "visual" } ) equals $.windowWidth()', function () {
+                    expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                } );
+
+            } );
+
+            describe( 'At 1:1 zoom, window size with option viewport: "layout" is the same as window size without a viewport argument', function () {
+
+                beforeEach( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+                    $body
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+
+                    // Setting the body to a very small size, so that scroll bars are guaranteed to be absent.
+                    $body.contentBox( 100, 100 );
+
+                    setMetaViewportZoom( 1 );
+                } );
+
+                afterAll( function () {
+                    restoreMetaViewport();
+                } );
+
+                it( '$.windowHeight( { viewport: "layout" } ) equals $.windowHeight()', function () {
+                    expect( $.windowHeight( { viewport: "layout" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                } );
+
+                it( '$.windowWidth( { viewport: "layout" } ) equals $.windowWidth()', function () {
+                    expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                } );
+
+            } );
+
             describeIf( isMobile(), msgNotMobile, 'Page is zoomed out to the maximum (pinch zoom).', function () {
 
                 // As a result, the page doesn't have scroll bars.
 
                 // Zooming in is tested further above, in the "window with scroll bars" spec.
-
-                var _storedMetaViewport;
-
-                beforeAll( function () {
-                    _storedMetaViewport = $( 'meta[name="viewport"]' ).attr( "content" );
-                } );
-
-                afterAll( function () {
-                    // Reset zoom, restore original meta viewport tag
-                    $( 'meta[name="viewport"]' ).attr( "content", _storedMetaViewport );
-                } );
 
                 beforeEach( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
@@ -411,10 +618,13 @@
                     $body.contentBox( 100, 100 );
 
                     // Zoom out to 50%
-                    $( 'meta[name="viewport"]' ).attr( "content", "width=device-width, initial-scale=0.5" );
-
+                    setMetaViewportZoom( 0.5 );
                 } );
 
+                afterAll( function () {
+                    // Reset zoom, restore original meta viewport tag
+                    restoreMetaViewport();
+                } );
 
                 it( '$.windowHeight() equals window.innerHeight', function () {
                     expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight );
@@ -422,6 +632,25 @@
 
                 it( '$.windowWidth() equals window.innerWidth', function () {
                     expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth );
+                } );
+
+                it( '$.windowHeight( { viewport: "visual" } ) equals $.windowHeight()', function () {
+                    expect( $.windowHeight( { viewport: "visual" }, _window ) ).toEqual( $.windowHeight( _window ) );
+                } );
+
+                it( '$.windowWidth( { viewport: "visual" } ) equals $.windowWidth()', function () {
+                    expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
+                } );
+
+                it( '$.windowHeight( { viewport: "layout" } ) equals the layout viewport height, document.documentElement.clientHeight', function () {
+                    // We don't have to contend with minimal UI here because we have already snapped out of it.
+                    var expected = _document.documentElement.clientHeight;
+                    expect( $.windowHeight( { viewport: "layout" }, _window ) ).toEqual( expected );
+                } );
+
+                it( '$.windowWidth( { viewport: "layout" } ) equals the layout viewport width, document.documentElement.clientWidth', function () {
+                    var expected = _document.documentElement.clientWidth;
+                    expect( $.windowWidth( { viewport: "layout" }, _window ) ).toEqual( expected );
                 } );
 
             } );
