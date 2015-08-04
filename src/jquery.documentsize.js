@@ -599,8 +599,8 @@
     }
 
     function isWindow ( value ) {
-        // About the same as jQuery.isWindow()
-        return !!value && value.window === value;
+        // Identical to jQuery.isWindow()
+        return value != null && value.window == value;         // jshint ignore:line
     }
 
     function isString ( value ) {
