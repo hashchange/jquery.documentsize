@@ -32,7 +32,7 @@
     </section>
 
     <section class="info content">
-        <p class="row spacious">The page demonstrates the use of Zepto, instead of jQuery, with the AMD build of jQuery.documentSize. See <code>amd.js</code> for the setup. This page won't work in IE8 and other legacy browsers.</p>
+        <p class="row spacious">The page demonstrates the use of Zepto, instead of jQuery, with the AMD build of jQuery.documentSize. See <code>require-config.js</code> for the setup. This page won't work in IE8 and other legacy browsers.</p>
     </section>
 
     <section class="log">
@@ -111,7 +111,12 @@
     </section>
 
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
-    <script data-main="amd" src="../bower_demo_components/requirejs/require.js"></script>
+    <script src="../bower_demo_components/requirejs/require.js"></script>
+    <script src="require-config.js"></script>
+    <script>
+        // Relative to the baseUrl defined in require-config.js
+        require( ['../demo/amd/amd'] );
+    </script>
 
 </body>
 </html>
