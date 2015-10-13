@@ -288,7 +288,8 @@ function ensureMetaViewport ( _window ) {
 }
 
 /**
- * Makes sure the meta viewport tag exists and is set to the default settings ("width=device-width, initial-scale=1.0").
+ * Makes sure the meta viewport tag exists and is set to the default settings ("width=device-width, initial-scale=1.0,
+ * shrink-to-fit=no").
  *
  * Returns the element.
  *
@@ -298,7 +299,7 @@ function ensureMetaViewport ( _window ) {
 function ensureDefaultMetaViewport ( _window ) {
     var el = ensureMetaViewport( _window );
 
-    el.content = "width=device-width, initial-scale=1.0";
+    el.content = "width=device-width, initial-scale=1.0, shrink-to-fit=no";
     return el;
 }
 
@@ -318,7 +319,7 @@ function setMetaViewportZoom ( zoomLevel, _window ) {
     _window || ( _window = window );
 
     if ( _originalMetaViewport[_window] === undefined ) _originalMetaViewport[_window] = el.content || "";
-    el.content = "width=device-width, initial-scale=" + zoomLevel;
+    el.content = "width=device-width, initial-scale=" + zoomLevel + ", shrink-to-fit=no";
     return el;
 }
 

@@ -105,7 +105,7 @@ jQuery.documentSize has been tested with
 
 - 2015 versions of Chrome, Firefox, Safari, and Opera on the Desktop
 - IE8+
-- Safari on iOS 8, Chrome on Android 5
+- Safari on iOS 8, iOS 9, Chrome on Android 5
 - PhantomJS, SlimerJS
 
 ## Performance
