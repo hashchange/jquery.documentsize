@@ -16,7 +16,7 @@ module.exports = function (grunt) {
     meta: {
       version: '<%= pkg.version %>',
       banner: '// jQuery.documentSize, v<%= meta.version %>\n' +
-        '// Copyright (c)<%= grunt.template.today("yyyy") %> Michael Heim, Zeilenwechsel.de\n' +
+        '// Copyright (c) <%= grunt.template.today("yyyy") %> Michael Heim, Zeilenwechsel.de\n' +
         '// Distributed under MIT license\n' +
         '// http://github.com/hashchange/jquery.documentsize\n' +
         '\n'
@@ -231,6 +231,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-focus');
 
+  grunt.registerTask('lint', ['jshint:components']);
+  grunt.registerTask('hint', ['jshint:components']);        // alias
   grunt.registerTask('test', ['jshint:components', 'karma:test']);
   grunt.registerTask('webtest', ['preprocess:interactive', 'sails-linker:interactive_spec', 'connect:testNoReload']);
   grunt.registerTask('interactive', ['preprocess:interactive', 'sails-linker:interactive_spec', 'connect:test', 'watch:livereload']);

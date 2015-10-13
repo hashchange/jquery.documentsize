@@ -160,7 +160,7 @@ If you'd like to fix, customize or otherwise improve jQuery.documentSize: here a
 
 ### Setup
 
-[npm][] and [Bower][] set up the environment for you. 
+[npm][] and [Bower][] set up the environment for you.
 
 - The only thing you've got to have on your machine is [Node.js]. Download the installer [here][Node.js].
 - Open a command prompt in the project directory.
@@ -173,7 +173,7 @@ Your test and build environment is ready now.
 
 #### Considerations for testing
 
-To run the tests on remote clients (mobile devices), start a web server with `grunt interactive` and visit `http://[your-host-ip]:9400/web-mocha/` with the client browser. Running the tests in the browser like this takes a _long_ time, so it makes sense to disable the power-save/sleep/auto-lock timeout on the mobile device. 
+To run the tests on remote clients (e.g. mobile devices), start a web server with `grunt interactive` and visit `http://[your-host-ip]:9400/web-mocha/` with the client browser. Running the tests in a browser like this takes a _long_ time, so it makes sense to disable the power-save/sleep/auto-lock timeout on the mobile device.
 
 #### Tool chain and commands
 
@@ -184,6 +184,7 @@ A handful of commands manage everything for you:
 - Run the tests in a terminal with `grunt test`.
 - Run the tests in a browser interactively, live-reloading the page when the source or the tests change: `grunt interactive`.
 - If the live reload bothers you, you can also run the tests in a browser without it: `grunt webtest`.
+- Run the linter only with `grunt lint` or `grunt hint`. (The linter is part of `grunt test` as well.)
 - Build the dist files (also running tests and linter) with `grunt build`, or just `grunt`.
 - Build continuously on every save with `grunt ci`.
 - Change the version number throughout the project with `grunt setver --to=1.2.3`. Or just increment the revision with `grunt setver --inc`. (Remember to rebuild the project with `grunt` afterwards.)

@@ -14,12 +14,18 @@ module.exports = function(config) {
 
 
     // frameworks to use
+    //
+    // For Jasmine, use ['jasmine'] only, or ['jasmine', 'jasmine-matchers'].
     frameworks: ['jasmine', 'jasmine-matchers'],
 
 
     // list of files / patterns to load in the browser
     files: [
       // Component dependencies
+
+      // The standard jQuery, provided by Bower, resolves to the latest version. It is used below.
+      // (By contrast, tests run through the interactive web interface use jQuery 1.x and work for oldIE. Use `grunt
+      // interactive` for them.)
       'bower_components/jquery/dist/jquery.js',
 
       // Component under test

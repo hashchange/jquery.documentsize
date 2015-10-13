@@ -49,8 +49,10 @@
     "karma.conf.js",
     "package.json"
   ],
-  "devDependencies": {},
   "dependencies": {
     "jquery": "*"
+  },
+  "devDependencies": {
+    "jquery-legacy": "jquery#^1"
   }
 }
