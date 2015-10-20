@@ -6,7 +6,7 @@ Detects the real width and height of the document. And the real width and height
 
 Works cross-browser, and returns the correct result in even the most exotic scenarios. It resolves the [shortcomings of jQuery][why] in that regard. And actually, because jQuery.documentSize is written in pure Javascript, you can use it [without jQuery][setup], too.
 
-If you are a happy user of this project already: You can support its development by [donating to it][donations]. You absolutely don't have to, of course, but perhaps it is something you [might actually want to do][donations].
+If you are a happy user of this project already, you can support its development by [donating to it][donations]. You absolutely don't have to, of course, but perhaps it is something you [might actually want to do][donations].
 
 ## Usage
 
