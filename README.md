@@ -289,7 +289,7 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [quirksmode-mobile-viewports]: http://www.quirksmode.org/mobile/viewports2.html "Quirksmode.org: A tale of two viewports"
 
 [w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
-[demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/amd.js "Demo: AMD setup with Zepto"
+[demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/require-config.js "Demo: AMD setup with Zepto"
 
 [data-provider.js]: https://github.com/hashchange/jquery.documentsize/blob/master/spec/helpers/data-provider.js "Source code of data-provider.js"
 
