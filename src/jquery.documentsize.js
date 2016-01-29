@@ -453,7 +453,7 @@
         // ddE.scrollWidth. If it did not react, however, it is linked to the (unchanged) document size.
         elementNameForDocSizeQuery = responds ? "documentElement" : "body";
 
-        document.body.removeChild( iframe );
+        if ( iframe ) document.body.removeChild( iframe );
 
     }
 
