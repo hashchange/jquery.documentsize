@@ -34,7 +34,7 @@
 
         } catch ( e ) {
 
-            // Fallback for unsupported, ancient browsers like IE6/7
+            // Fallback for unsupported, broken browsers which can't run the behaviour test successfully
             width = guessDocumentSize( "Width", _document );
 
         }
@@ -58,7 +58,7 @@
 
         } catch ( e ) {
 
-            // Fallback for unsupported, ancient browsers like IE6/7
+            // Fallback for unsupported, broken browsers which can't run the behaviour test successfully
             height = guessDocumentSize( "Height", _document );
 
         }
@@ -545,8 +545,8 @@
     }
 
     /**
-     * Returns a best guess for the window width or height. Used as a fallback for unsupported browsers - ancient ones
-     * like IE6/7, or exotic browsers which exhibit weird, non-standard behaviour.
+     * Returns a best guess for the window width or height. Used as a fallback for unsupported browsers which are too
+     * broken to even run the feature test.
      *
      * The conventional jQuery method of guessing the document size is used here: every conceivable value is queried and
      * the largest one is picked.
@@ -562,7 +562,6 @@
             ddE.body[ "offset" + dimension ], _document[ "offset" + dimension ],
             _document[ "client" + dimension ]
         );
-
     }
 
     /**
@@ -688,13 +687,38 @@
         return num === +num && num !== ( num | 0 );         // jshint ignore:line
     }
 
+    /**
+     * Checks if we are dealing with a truly ancient version of IE (< IE8).
+     *
+     * This is done by browser sniffing, rather than a test tailored to the use case. That's because the use case is
+     * preventing the browser from crashing.
+     *
+     * The test follows the MSDN recommendation at https://msdn.microsoft.com/en-us/library/ms537509(v=vs.85).aspx#parsingua
+     */
+    function isAncientIE () {
+        var userAgentTestRx,
+            ieVersion = false,
+            userAgent = navigator && navigator.userAgent;
+
+        if ( navigator && navigator.appName === "Microsoft Internet Explorer" && userAgent ) {
+            userAgentTestRx = new RegExp( "MSIE ([0-9]{1,}[\.0-9]{0,})" );                                       // jshint ignore:line
+            if ( userAgentTestRx.exec( userAgent ) != null ) ieVersion = parseFloat( RegExp.$1 );
+        }
+
+        return ieVersion && ieVersion < 8;
+    }
+
 
     // Let's prime $.documentWidth(), $.documentHeight() and $.scrollbarWidth() immediately after the DOM is ready. It
     // is best to do it up front because the test touches the DOM, so let's get it over with before people set up
     // handlers for mutation events and such.
-    if ( typeof $ === "function" ) {
+    //
+    // Skipped for ancient versions of IE (IE6, IE7). IE6 and IE7 can't handle the feature tests on DOM ready - they
+    // crash right away. Later on, the tests are ok. So we don't run them preemptively, but rather on demand when the
+    // first document size query is made.
+    if ( typeof $ === "function" && !isAncientIE() ) {
 
-        // Try-catch acts as a safety net for unsupported, ancient browsers like IE6/7
+        // Try-catch acts as a safety net for unsupported, broken browsers
         try {
 
             $( function () {
