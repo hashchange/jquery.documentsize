@@ -23,9 +23,23 @@
      * @returns {number}
      */
     $.documentWidth = function ( _document ) {
+        var width;
+
         _document || ( _document = document );
-        if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
-        return _document[elementNameForDocSizeQuery].scrollWidth;
+
+        try {
+
+            if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+            width = _document[elementNameForDocSizeQuery].scrollWidth;
+
+        } catch ( e ) {
+
+            // Fallback for unsupported, ancient browsers like IE6/7
+            width = guessDocumentSize( "Width", _document );
+
+        }
+
+        return width;
     };
 
     /**
@@ -33,9 +47,23 @@
      * @returns {number}
      */
     $.documentHeight = function ( _document ) {
+        var height;
+
         _document || ( _document = document );
-        if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
-        return _document[elementNameForDocSizeQuery].scrollHeight;
+
+        try {
+
+            if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+            height = _document[elementNameForDocSizeQuery].scrollHeight;
+
+        } catch ( e ) {
+
+            // Fallback for unsupported, ancient browsers like IE6/7
+            height = guessDocumentSize( "Height", _document );
+
+        }
+
+        return height;
     };
 
     /**
@@ -517,6 +545,27 @@
     }
 
     /**
+     * Returns a best guess for the window width or height. Used as a fallback for unsupported browsers - ancient ones
+     * like IE6/7, or exotic browsers which exhibit weird, non-standard behaviour.
+     *
+     * The conventional jQuery method of guessing the document size is used here: every conceivable value is queried and
+     * the largest one is picked.
+     *
+     * @param {string}   dimension    accepted values are "Width" or "Height" (capitalized first letter!)
+     * @param {Document} [_document]
+     */
+    function guessDocumentSize( dimension, _document ) {
+        var ddE = _document.documentElement;
+
+        return Math.max(
+            ddE.body[ "scroll" + dimension ], _document[ "scroll" + dimension ],
+            ddE.body[ "offset" + dimension ], _document[ "offset" + dimension ],
+            _document[ "client" + dimension ]
+        );
+
+    }
+
+    /**
      * Returns window.innerWidth.
      *
      * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
@@ -644,10 +693,17 @@
     // is best to do it up front because the test touches the DOM, so let's get it over with before people set up
     // handlers for mutation events and such.
     if ( typeof $ === "function" ) {
-        $( function () {
-            if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
-            browserScrollbarWidth();
-        } );
+
+        // Try-catch acts as a safety net for unsupported, ancient browsers like IE6/7
+        try {
+
+            $( function () {
+                if ( elementNameForDocSizeQuery === undefined ) testDocumentScroll();
+                browserScrollbarWidth();
+            } );
+
+        } catch ( e ) {}
+
     }
 
 
