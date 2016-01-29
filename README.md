@@ -261,7 +261,7 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 MIT.
 
-Copyright (c) 2015 Michael Heim.
+Copyright (c) 2015, 2016 Michael Heim.
 
 Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [See file][data-provider.js].
 
