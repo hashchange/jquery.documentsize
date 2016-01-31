@@ -1,0 +1,88 @@
+@font-face {
+  font-family: "Flaticon";
+  src: url("../fonts/flaticon.eot");
+  src: url("../fonts/flaticon.eot#iefix") format("embedded-opentype"), url("../fonts/flaticon.woff") format("woff"), url("../fonts/flaticon.ttf") format("truetype"), url("../fonts/flaticon.svg") format("svg");
+  font-style: normal; }
+
+[class^="flaticon-"]:before,
+[class*=" flaticon-"]:before,
+[class^="flaticon-"]:after,
+[class*=" flaticon-"]:after {
+  font-family: Flaticon;
+  font-style: normal; }
+
+.flaticon-rolled3:before {
+  content: "\e013"; }
+
+.flaticon-clock96:before {
+  content: "\e007"; }
+
+.flaticon-enter3:before {
+  content: "\e00a"; }
+
+.flaticon-calendar-icons:before {
+  content: "\e004"; }
+
+.flaticon-pin56:before {
+  content: "\e011"; }
+
+.flaticon-books30:before {
+  content: "\e002"; }
+
+/**/
+.flaticon-arrow176:before {
+  content: "\e000"; }
+
+.flaticon-arrow180:before {
+  content: "\e001"; }
+
+.flaticon-business8:before {
+  content: "\e003"; }
+
+.flaticon-chemistry29:before {
+  content: "\e005"; }
+
+.flaticon-chevron10:before {
+  content: "\e006"; }
+
+.flaticon-college1:before {
+  content: "\e008"; }
+
+.flaticon-email19:before {
+  content: "\e009"; }
+
+.flaticon-graduate34:before {
+  content: "\e00b"; }
+
+.flaticon-laptop:before {
+  content: "\e00c"; }
+
+.flaticon-logout13:before {
+  content: "\e00d"; }
+
+.flaticon-magnifyingglass48:before {
+  content: "\e00e"; }
+
+.flaticon-man379:before {
+  content: "\e00f"; }
+
+.flaticon-multiple25:before {
+  content: "\e010"; }
+
+.flaticon-pointer45:before {
+  content: "\e012"; }
+
+.flaticon-search74:before {
+  content: "\e014"; }
+
+.flaticon-speaker48:before {
+  content: "\e015"; }
+
+.flaticon-teacher4:before {
+  content: "\e016"; }
+
+.flaticon-telephone5:before {
+  content: "\e017"; }
+
+.flaticon-travel23:before {
+  content: "\e018"; }

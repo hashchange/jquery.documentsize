@@ -1,0 +1,293 @@
+.open-sans-font {
+  font-family: 'Open Sans', Arial, sans-serif; }
+
+/* Custom */
+/* Custom */
+/* #37bc9b */
+/* # Utility Classes */
+/* ## Colours */
+.bootstrap-styles {
+  font-size: 14px;
+  /* ## Positioning */
+  /* ## Sizing */
+  /* ## Misc. */
+  /* ### On */
+  /* ### Off */
+  /* ## Formatting */
+  /* ## Display */
+  /* # Libraries */
+  /* ## Bootstrap Extended */
+  /* ## Selectize */
+  /* ## Bootstrap Table */
+  /* Do not extend */
+  /* ### Overrides */
+  /* ## Bootstrap Multiselect */
+  /* ## Open Text */ }
+  .bootstrap-styles .grey {
+    color: #ddd; }
+  .bootstrap-styles .dark-grey {
+    color: #aaa; }
+  .bootstrap-styles .red {
+    color: #c00000; }
+  .bootstrap-styles .green {
+    color: #1d9f75; }
+  .bootstrap-styles .dark-red {
+    color: #972e37; }
+  .bootstrap-styles .white, .bootstrap-styles .table-styled .white-text {
+    color: white; }
+  .bootstrap-styles .orange {
+    color: #ea4e1b; }
+  .bootstrap-styles .lime-green {
+    color: #93c01d; }
+  .bootstrap-styles .dark-blue {
+    color: #008fb9; }
+  .bootstrap-styles .slate-grey {
+    color: #75878b; }
+  .bootstrap-styles .pr-4 {
+    padding-right: 4px; }
+  .bootstrap-styles .pl-0 {
+    padding-left: 0; }
+  .bootstrap-styles .pl-4 {
+    padding-left: 4px; }
+  .bootstrap-styles .pl-18 {
+    padding-left: 18px; }
+  .bootstrap-styles .pb-7 {
+    padding-bottom: 7px; }
+  .bootstrap-styles .mt-15, .bootstrap-styles .tagline p:not(:first-child) {
+    margin-top: 15px; }
+  .bootstrap-styles .mt-30 {
+    margin-top: 30px; }
+  .bootstrap-styles .mt-45, .bootstrap-styles .table-styled tr:not(:first-child) {
+    margin-top: 45px; }
+  .bootstrap-styles .mt-50 {
+    margin-top: 50px; }
+  .bootstrap-styles .mr-2 {
+    margin-right: 2px; }
+  .bootstrap-styles .mr-4, .bootstrap-styles .comma:before {
+    margin-right: 4px; }
+  .bootstrap-styles .mb-0 {
+    margin-bottom: 0; }
+  .bootstrap-styles .mb-15 {
+    margin-bottom: 15px; }
+  .bootstrap-styles .mb-30 {
+    margin-bottom: 30px; }
+  .bootstrap-styles .ml-4 {
+    margin-left: 4px; }
+  .bootstrap-styles .size-90-perc {
+    font-size: 90%; }
+  .bootstrap-styles .rounded-corners-top-left, .bootstrap-styles .input-group-btn:first-child > .btn-group:not(:first-child) > .btn.multiselect {
+    border-top-left-radius: 4px; }
+  .bootstrap-styles .rounded-corners-top-right {
+    border-top-right-radius: 4px; }
+  .bootstrap-styles .rounded-corners-bottom-left, .bootstrap-styles .input-group-btn:first-child > .btn-group:not(:first-child) > .btn.multiselect {
+    border-bottom-left-radius: 4px; }
+  .bootstrap-styles .rounded-corners-bottom-right {
+    border-bottom-right-radius: 4px; }
+  .bootstrap-styles .pointer, .bootstrap-styles .multiselect-container > li:not(.active):not(.disabled) > a > label:hover {
+    cursor: pointer; }
+  .bootstrap-styles .bold {
+    font-weight: 700; }
+  .bootstrap-styles .inline-block, .bootstrap-styles .sentence-case, .bootstrap-styles .columnize, .bootstrap-styles .two-column-split, .bootstrap-styles .five-column-split {
+    display: inline-block; }
+  .bootstrap-styles .align-right {
+    text-align: right; }
+  .bootstrap-styles .align-top, .bootstrap-styles .columnize, .bootstrap-styles .two-column-split, .bootstrap-styles .five-column-split, .bootstrap-styles .selectize-control {
+    vertical-align: top; }
+  .bootstrap-styles .align-bottom {
+    vertical-align: bottom; }
+  .bootstrap-styles .align-middle {
+    vertical-align: middle; }
+  .bootstrap-styles .no-bullets,
+  .bootstrap-styles .no-bullets li {
+    list-style-type: none; }
+  .bootstrap-styles .no-bold {
+    font-weight: normal; }
+  .bootstrap-styles .no-rounded-corners, .bootstrap-styles .selectize-control {
+    border-radius: 0; }
+  .bootstrap-styles .no-rounded-corners-top-right {
+    border-top-right-radius: 0; }
+  .bootstrap-styles .no-rounded-corners-bottom-right {
+    border-bottom-right-radius: 0; }
+  .bootstrap-styles .no-padding, .bootstrap-styles .multiselect-container,
+  .bootstrap-styles .multiselect-container > li > a, .bootstrap-styles p {
+    padding: 0; }
+  .bootstrap-styles .no-margin, .bootstrap-styles .table-styled p, .bootstrap-styles .multiselect-container > li > a > label, .bootstrap-styles table {
+    margin: 0; }
+  .bootstrap-styles .no-background {
+    background: none; }
+  .bootstrap-styles .capitalise {
+    text-transform: capitalize; }
+  .bootstrap-styles .sentence-case:first-letter {
+    text-transform: uppercase; }
+  .bootstrap-styles .comma:before {
+    content: ","; }
+  .bootstrap-styles .table-styled .grey-bottom-border {
+    border-bottom: 1px solid #ddd; }
+  .bootstrap-styles .table-styled .grey-left-border {
+    border-left: 1px solid #ddd; }
+  .bootstrap-styles .table-styled .spotlight {
+    background-image: url("../images/circle.svg");
+    background-repeat: no-repeat;
+    /*background-position: left;
+            background-size: 185% 150%;*/
+    background-position: 115% -30px;
+    background-size: 300px 300px; }
+    .bootstrap-styles .table-styled .spotlight .dark-blue-background {
+      background-color: rgba(0, 104, 161, 0.745); }
+  .bootstrap-styles .table-styled .purple-background {
+    background-color: #dde; }
+  .bootstrap-styles .table-styled .purple-top-border {
+    border-top: 1px solid #aaaad4; }
+  .bootstrap-styles .table-styled .truncate {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; }
+    .bootstrap-styles .table-styled .truncate:hover {
+      /* overflow: visible */ }
+  .bootstrap-styles .two-column-split.width-20-perc {
+    width: 20%; }
+  .bootstrap-styles .two-column-split.width-80-perc {
+    width: 80%; }
+  .bootstrap-styles .five-column-split {
+    width: 20%; }
+  .bootstrap-styles .bs-callout {
+    padding: 20px;
+    margin: 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px; }
+  .bootstrap-styles .bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px; }
+  .bootstrap-styles .bs-callout p:last-child {
+    margin-bottom: 0; }
+  .bootstrap-styles .bs-callout code {
+    border-radius: 3px; }
+  .bootstrap-styles .bs-callout + .bs-callout {
+    margin-top: -5px; }
+  .bootstrap-styles .bs-callout-primary {
+    border-left-color: #ea4e1b; }
+  .bootstrap-styles .bs-callout-primary h4 {
+    color: #ea4e1b; }
+  .bootstrap-styles .bs-callout-info {
+    border-left-color: #93c01d; }
+  .bootstrap-styles .bs-callout-info h4 {
+    color: #93c01d; }
+  .bootstrap-styles .bs-callout-tertiary {
+    border-left-color: #75878b; }
+  .bootstrap-styles .bs-callout-tertiary h4 {
+    color: #75878b; }
+  .bootstrap-styles .alert-floating {
+    left: 25%;
+    width: 50%;
+    top: 10px;
+    z-index: 1001;
+    position: fixed; }
+  .bootstrap-styles .alert-info a {
+    color: inherit; }
+  .bootstrap-styles .selectize-control .selectize-input,
+  .bootstrap-styles .selectize-control .selectize-input.dropdown-active {
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    vertical-align: inherit; }
+  .bootstrap-styles .selectize-dropdown-content .no-background .highlight {
+    background: inherit !important; }
+  .bootstrap-styles .selectize-dropdown-hint > .selectize-dropdown-content {
+    padding-left: 12px;
+    padding-right: 12px; }
+  .bootstrap-styles .selectize-input.focus {
+    border-color: #93c01d;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(147, 192, 29, 0.4);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(147, 192, 29, 0.4); }
+  .bootstrap-styles .selectize-dropdown [data-selectable] .highlight {
+    background: rgba(147, 192, 29, 0.65); }
+  .bootstrap-styles .selectize-control.multi .selectize-input > div.active {
+    background: #93c01d; }
+  .bootstrap-styles .table-results-as-rows .display-block {
+    display: block; }
+  .bootstrap-styles .bootstrap-table .table > tbody > tr > .height-padding-5 {
+    /* Have to use !important as used in Bootstrap Table */
+    padding-top: 2px !important;
+    padding-bottom: 3px !important; }
+  .bootstrap-styles .fixed-table-loading {
+    top: 0 !important;
+    padding-top: 5px; }
+  .bootstrap-styles .table.table-no-bordered > tbody > tr > td {
+    border-top: none; }
+  .bootstrap-styles .table-no-bordered > tbody > tr > td {
+    border-right-style: hidden; }
+  .bootstrap-styles .bootstrap-table .table {
+    border-bottom: none; }
+  .bootstrap-styles .fixed-table-container tbody .dark-blue-background {
+    border-left: none; }
+  .bootstrap-styles .bootstrap-table .table.table-no-bordered > tbody > tr > .grey-right-border {
+    border-right: 1px solid #ddd; }
+  .bootstrap-styles .fixed-table-container tbody tr td.purple-top-border {
+    border-top: 1px solid #aaaad4; }
+  .bootstrap-styles .table-hover > tbody > .no-records-found:hover,
+  .bootstrap-styles .table-hover > tbody > .no-hover:hover {
+    background-color: initial; }
+  .bootstrap-styles .table-hover > tbody > .light-yellow-hover:hover {
+    background-color: #fff9ea; }
+  .bootstrap-styles .pagination > .page-pre > a,
+  .bootstrap-styles .pagination > .page-next > a {
+    padding: 6px 16px; }
+  .bootstrap-styles .multiselect-container > li > a > label {
+    padding: 10px 15px; }
+  .bootstrap-styles .multiselect-container > li.active:first-child,
+  .bootstrap-styles .multiselect-container > li.active:first-child > a,
+  .bootstrap-styles .multiselect-container > li:first-child:not(.active):not(.disabled),
+  .bootstrap-styles .multiselect-container > li:first-child:not(.active):not(.disabled) > a:hover {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit; }
+  .bootstrap-styles .multiselect-container > li.active:last-child,
+  .bootstrap-styles .multiselect-container > li.active:last-child > a,
+  .bootstrap-styles .multiselect-container > li:last-child:not(.active):not(.disabled),
+  .bootstrap-styles .multiselect-container > li:last-child:not(.active):not(.disabled) > a:hover {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit; }
+  .bootstrap-styles .multiselect-container input[type="radio"] {
+    display: none; }
+  .bootstrap-styles .multiselect-container > li > a:hover {
+    background-color: #eee; }
+
+/* # Browser Specific */
+.ie8 {
+  /* Non-RGBA Fallback */
+  /* Bootstrap */ }
+  .ie8 tr.display-block {
+    margin-top: 45px; }
+  .ie8 tr.display-block:first-child {
+    margin-top: 0; }
+  .ie8 .dark-blue-background {
+    background-color: #0068a1; }
+  .ie8 .btn-primary,
+  .ie8 .btn-primary:active,
+  .ie8 .btn-primary:focus,
+  .ie8 .btn-primary:hover,
+  .ie8 .btn-success,
+  .ie8 .btn-success:active,
+  .ie8 .btn-success:focus,
+  .ie8 .btn-success:hover,
+  .ie8 .btn-info,
+  .ie8 .btn-info:active,
+  .ie8 .btn-info:focus,
+  .ie8 .btn-info:hover {
+    color: white; }
+  .ie8 .display-block {
+    width: 100%;
+    float: left; }
+
+.ie9 tr.display-block {
+  padding: 0; }
+
+.ie9 .display-block {
+  width: 100%;
+  float: left; }
+
+/* # Browser Engine Specific */
+.webkit .clear-button {
+  margin-left: -1px;
+  margin-right: 1px; }

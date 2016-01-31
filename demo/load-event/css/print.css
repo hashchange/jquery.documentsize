@@ -1,0 +1,5 @@
+body * {
+  display: none !important; }
+
+body:after {
+  content: "Don't waste paper!"; }

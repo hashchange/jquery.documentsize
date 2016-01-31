@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Search Results</title>
+    <!-- Mobile Viewport Fix -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="css/font-awesome.css" />
+    <link rel="stylesheet" href="css/flaticon.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/print.css" media="print" />
+    <link rel="stylesheet" href="css/selectize.bootstrap3.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+
+    <style>
+        /* Keep inline */
+        .bootstrap-styles .hide,
+        .ie-warning,
+        .ie7 .row,
+        .ie6 .row {
+            display: none !important;
+        }
+
+        .ie7 .ie-warning, .ie6 .ie-warning {
+            display: block !important;
+        }
+
+        .firefox .fa-spin,
+        .ie9 .fa-spin,
+        .ie8 .fa-spin {
+            display: none
+        }
+    </style><link rel='stylesheet' href='css/bootstrap-table.css'>
+    <script>
+        WebFontConfig = {
+            google: { families: [ 'Open+Sans:400,700:latin' ] }
+        };
+        (function(){
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+    <!--[if lte IE 8]>
+    <script src="js/libs/inexorabletash/polyfill/master/es5.js"></script>
+    <![endif]-->
+    <script src="js/libs/jquery/jquery-1.12.0.js"></script>
+    <script src="js/libs/modernizr/modernizr-custom.js"></script>
+    <script src="js/libs/uri/uri-1.16.1.js"></script>
+    <script src="js/libs/microplugin/microplugin.js"></script>
+    <script src="js/libs/sifter/sifter.js"></script>
+    <script src="js/libs/selectize/selectize-0.12.1.js"></script>
+    <script src="js/libs/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+    <script src="js/libs/bootstrap-table/bootstrap-table-1.9.1.js"></script>
+    <script src="js/libs/bootstrap/bootstrap-3.3.5-concat.js"></script>
+    <script src="js/libs/detectizr/detectizr-2.2.0.js"></script>
+    <script src="js/libs/scroll-lock/scroll-lock-1.1.1.js"></script>
+
+    <script src="/dist/jquery.documentsize.js"></script>
+
+    <script src="js/libs/jquery.isinview/jquery.isinview-1.0.3.js"></script>
+    <script src="js/libs/jquery.scrollto/jquery.scrollto-2.1.2.js"></script>
+    <script src="js/libs/moment/moment-2.10.6.js"></script>
+    <script src="js/libs/bootstrap-table/bootstrap-table-en-GB.js"></script>
+    <script src="js/libs/bootstrap-table/bootstrap-table-1.8.1.min.js"></script>
+    <script src="js/libs/selectize/selectize-plugins.js"></script>
+
+    <script src="custom.js"></script><script>var isLiteVersion = false</script></head>
+<body>
+    <script>var isLiteVersion = true</script><div class="loader bootstrap-styles"><i class="icon fa fa-cog fa-spin mr-4"></i>Loading...</div>
+    <div class="content bootstrap-styles">
+        <div class="ie-warning alert alert-warning alert-block" role="alert">
+            <p><span class="glyphicon glyphicon-exclamation-sign mr-4" aria-hidden="true"></span>This application cannot be used with this browser as the browser is outdated. <a target="_blank" href="http://browsehappy.com/?locale=en" title="http://browsehappy.com/">Please upgrade your browser.</a></p>
+        </div>
+        <div class="alert-user-message alert alert-info alert-block hide" role="alert">
+            <button type="button" class="close close-button" onclick="toggleUserMessage(-1, false)">×</button>
+            <p><span class="glyphicon glyphicon-info-sign mr-4" aria-hidden="true"></span><span class="message"></span></p>
+        </div>
+    </div>
+    <div class="content bootstrap-styles">
+        <div class="row hide">
+            <div class="col-sm-12">
+                <div class="bs-callout bs-callout-tertiary search">
+                    <div class="search-summary hide mb-15"></div>
+                    <div class="mb-30 input-group">
+                    <span class="input-group-btn study-type-dropdown-input-group">
+                        <select class="study-type-dropdown">
+                            <option value="1">Undergraduate</option>
+                            <option value="2">Postgraduate Taught</option>
+                            <option value="3">Postgraduate Research</option>
+                        </select>
+                    </span>
+                        <input class="selectize" placeholder="" name="selectize" type="text" autocomplete="off" autocorrect="off" autocapitalize="off">
+                    <span class="input-group-btn clear-button-input-group">
+                        <button class="btn btn-default clear-button icon fa fa-times no-bold no-rounded-corners" title="Clear" type="button"></button>
+                    </span>
+                    <span class="input-group-btn search-button-input-group">
+                        <button class="btn btn-info search-button no-bold" title="Search" type="button"><i class="icon fa fa-search mr-4"></i>Search</button>
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- .content -->
+
+    <!-- JavaScript -->
+    <script>
+        var DEGREE_PROGRAMME              = 'degree-programmes',
+            SUBJECT_AREA                  = 'subject-areas',
+            RESEARCH_AREA                 = 'research-areas',
+            UNDERGRADUATE                 = 'undergraduate',
+            POSTGRADUATE_TAUGHT           = 'postgraduate-taught',
+            POSTGRADUATE_RESEARCH         = 'postgraduate-research';
+
+        var pageTypes = {};
+        pageTypes[DEGREE_PROGRAMME]       = 'Degree Programmes',
+            pageTypes[SUBJECT_AREA]           = 'Subject Areas',
+            pageTypes[RESEARCH_AREA]          = 'Research Areas';
+
+        var studyTypes = {};
+        studyTypes[UNDERGRADUATE]         = 'Undergraduate',
+            studyTypes[POSTGRADUATE_TAUGHT]   = 'Postgraduate Taught',
+            studyTypes[POSTGRADUATE_RESEARCH] = 'Postgraduate Research';
+
+        var searchTypes = {
+            'subject_areas.title'   : 'Subject Area',
+            'programme_titles.title': 'Programme Title',
+            'keywords.keyword'      : 'Keyword',
+            'ucas_code'             : 'UCAS Code',
+            'degree_types.abbr'     : 'Degree Type',
+            'degree_types.title'    : 'Degree Type',
+            'start_months.title'    : 'Start Month',
+            'study_modes.study_mode': 'Study Mode',
+            'learning_modes.title'  : 'Learning Mode'
+        };
+
+        var previousSearchTerms,         // Track previously generated search term(s)
+            previousHintMessage,         // Track previously displayed hint
+            hintText                     = 'Type in a search term',
+            hintTextAfterTokenAdd        = 'Keep typing or view the results of your selection below',
+            hintLoadingSearchResults     = 'Please wait, your results are loading on the next page',
+            noResultsText                = 'No suggestions found. You are currently searching on <b>{0}</b> study only.',
+            noMoreResultsText            = 'No more suggestions to make, view the results of your selection below',
+            searchingInProgressText      = '<i class="icon fa fa-cog fa-spin mr-4"></i>Searching&hellip;',
+            searchingStillInProgressText = 'Just a little longer',
+            simpleDiv                    = '<div title="{0}" class="{1}">{2}</div>',
+            simpleIcon                   = '<i class="icon {0}"></i>',
+            previousQuery,               // Track previously entered query (single)
+            previousItems                = [], // Track previous suggestions
+            currentSearch                = '<ul class="no-bullets pl-0 mb-0"><li><i class="icon fa fa-search mr-4"></i>Showing <span class="search-results-total bold"></span> result<span class="plural">s</span> for:<ul class="pl-18"><li>{0}</li></ul></li></ul>',
+            currentSearchNoTokens        = '<b>All {0}</b>',
+            currentSearchWithTokens      = '<i class="icon fa fa-quote-left mr-4 grey"></i><span class="search-summary-text">{0}</span><i class="icon fa fa-quote-right ml-4 grey"></i>',
+            currentSearchTokenType       = '<span class="dark-grey">{0}</span>',
+            simpleSpan                   = '<span title="{0}" class="{1}">{2}</span>',
+            currentSearchToken           = '<b class="{0}">{1}</b>',
+            ignoredExplorerVersions      = '.ie7, .ie6',
+            limitedExplorerVersions      = '.ie9, .ie8',
+            isMobile                     = ($('.mobile').length > 0) ? true : false,
+            didYouMean                   = '<small>Did you mean: <em class="capitalise mr-2">{0}</em>?</small>',
+            loadingUrlTerms              = false,
+            isUrlSet                     = false,
+            pageType                     = DEGREE_PROGRAMME, // default
+            studyType                    = UNDERGRADUATE,    // default
+            scriptName                   = '',
+            $selectize,
+            ajaxWaitingTimer;
+
+        // Ensure URL has item type (P/SA) and study type (UG/PG) set
+        function checkUrl(isReload){
+            if(isLiteVersion === true){
+                return isUrlSet = true;
+            }
+
+            var uri = URI(),
+                segments = uri.segment(),
+                index = segments.indexOf('jonathan.goode/pages'),
+                isReload = (isReload === undefined) ? false : isReload;
+
+            var segment1 = UNDERGRADUATE,
+                segment2 = DEGREE_PROGRAMME;
+
+            if(isset(segments[index + 1]) && isset(studyTypes[segments[index + 1]]) &&
+               isset(segments[index + 2]) && isset(pageTypes[segments[index + 2]])){
+                segment1 = segments[index + 1];
+                segment2 = segments[index + 2];
+            }
+
+            studyType  = segment1,
+                pageType   = segment2;
+
+            scriptName = (scriptName == '') ? studyType : scriptName;
+            localStorageCacheName = 'ls_' + pageType + '_' + studyType;
+            isUrlSet  = true;
+
+            if($(limitedExplorerVersions).length > 0){
+                tableResultsAsColumns = true;
+            } else if(segment2 == DEGREE_PROGRAMME){
+                if(segment1 == POSTGRADUATE_TAUGHT){
+                    $('select.study-type-dropdown').find('option[value="2"]').prop('selected', true);
+                } else {
+                    $('select.study-type-dropdown').find('option[value="2"]').prop('selected', false);
+                }
+
+                if(isReload){
+                    $('select.study-type-dropdown').multiselect('refresh');
+                }
+
+                tableResultsAsRows = true;
+            } else if($.inArray(segment2, [RESEARCH_AREA, SUBJECT_AREA]) !== -1){
+                if(segment1 == UNDERGRADUATE || segment1 == POSTGRADUATE_RESEARCH){
+                    if(segment1 == POSTGRADUATE_RESEARCH){
+                        $('select.study-type-dropdown').find('option[value="3"]').prop('selected', true);
+                    }
+
+                    tableResultsAsColumns = true;
+                } else if(segment1 == POSTGRADUATE_TAUGHT){
+                    isUrlSet = false;
+                }
+            }
+
+            return isUrlSet;
+        }
+
+        // Selectize
+        function clearOptions(){
+            var options = $selectize.options;
+
+            for(option in options){
+                if($selectize.items.indexOf(option) == -1){
+                    $selectize.removeOption(option);
+                }
+            }
+        }
+
+        function setUrlStudyType(newStudyType){
+            var newStudyType = parseInt(newStudyType),
+                newPageType;
+
+            switch(newStudyType){
+                case 1:
+                    newStudyType = UNDERGRADUATE;
+                    newPageType  = DEGREE_PROGRAMME;
+                    break;
+                case 2:
+                    newStudyType = POSTGRADUATE_TAUGHT;
+                    newPageType  = DEGREE_PROGRAMME;
+                    break;
+                case 3:
+                    newStudyType = POSTGRADUATE_RESEARCH;
+                    newPageType  = RESEARCH_AREA;
+                    break;
+            }
+
+            if(isLiteVersion === true){
+                // Update variables
+                scriptName = studyType = newStudyType;
+                pageType   = newPageType;
+                localStorageCacheName = 'ls_' + pageType + '_' + studyType;
+            } else if(Modernizr.history){
+                var uri = URI(),
+                    segments = uri.segment();
+
+                $('#page_top_menu').find('.active').removeClass('active');
+
+                var studyTypeIndex = $.inArray(studyType, segments),
+                    pageTypeIndex  = $.inArray(pageType, segments);
+
+                switch(newStudyType){
+                    case UNDERGRADUATE:
+                        $('#page_top_menu').find('li:eq(1)').addClass('active');
+                        break;
+                    case POSTGRADUATE_TAUGHT:
+                        $('#page_top_menu').find('li:eq(2)').addClass('active');
+                        break;
+                    case POSTGRADUATE_RESEARCH:
+                        $('#page_top_menu').find('li:eq(3)').addClass('active');
+                        break;
+                }
+
+                if(studyTypeIndex !== undefined && pageTypeIndex !== undefined){
+                    // Update variables
+                    scriptName = studyType = newStudyType;
+                    pageType   = newPageType;
+                    localStorageCacheName = 'ls_' + pageType + '_' + studyType;
+
+                    uri.segment(studyTypeIndex, studyType);
+                    uri.segment(pageTypeIndex, pageType);
+                    history.pushState({}, '', uri.toString());
+
+                    tableResultsAsColumnsOptions.data = '', // Clear
+                        tableResultsAsRowsOptions.data    = ''; // Clear
+
+                    executeSearch(true, false, true);
+                }
+            }
+        }
+
+        function getSelectizeLabels(selectizeItems){
+            selectizeItems = selectizeItems.slice(0); // Clone
+
+            $.each(selectizeItems, function(key, value){
+                if($selectize.options[value] !== undefined){
+                    selectizeItems[key] = $selectize.options[value].suggestion;
+                }
+            });
+
+            return selectizeItems;
+        }
+
+        function closeMultiselect(){
+            $('.study-type-dropdown').next('.dropdown-menu').not(':hidden').toggle();
+        }
+
+        function clearInput(){
+            if($.trim($('.selectize input').val()) != ''){
+                $selectize.setTextboxValue(''); // Clear unmatched input
+                previousQuery = ''; // Reset
+
+                if($selectize.items.length){
+                    $selectize.showHintDropdown(hintTextAfterTokenAdd, true);
+                } else {
+                    $selectize.showHintDropdown(hintText, true);
+                }
+
+                if(!isMobile){
+                    $selectize.focus();
+                }
+            } else if($selectize !== undefined){
+                if($selectize.items.length){
+                    $selectize.clear();
+                    $selectize.showHintDropdown(hintText);
+
+                    if(!isMobile){
+                        $selectize.focus();
+                    }
+                } else {
+                    $selectize.blur();
+                }
+
+                clearOptions(); // Clear any previous suggestions from dropdown
+            } else {
+                $('.selectize').val('');
+
+                if($selectize === undefined){
+                    executeSearch();
+                }
+            }
+        }
+
+        function toggleUserMessage(messageId, doShow){
+            var messageId    = (messageId === undefined) ? 1    : messageId,
+                doShow       = (doShow    === undefined) ? true : doShow,
+                messageClass = '.alert-user-message',
+                messageText,
+                showClose,
+                isFloating;
+
+            switch(messageId){
+                case 1:
+                    messageText = 'Apologies, this is taking longer than usual. If the problem persists please contact our <a href="mailto:servicedesk@abdn.ac.uk?subject=Issues with Prospectus" title="Email the Service Desk"><i class="icon fa fa-envelope mr-4"></i>Service Desk</a>';
+                    showClose = true;
+                    isFloating = true;
+                    break;
+                case 2:
+                    messageText = 'Apologies, there has been an error loading this application. Please contact our <a href="mailto:servicedesk@abdn.ac.uk?subject=Issues with Prospectus" title="Email the Service Desk"><i class="icon fa fa-envelope mr-4"></i>Service Desk</a>';
+                    showClose = false;
+                    isFloating = false;
+                    break;
+                default:
+                    messageText = '';
+            }
+
+            if(messageText != ''){
+                $(messageClass).find('.message').html(messageText);
+
+                if(showClose){
+                    $(messageClass).find('.close-button').removeClass('hide');
+                } else {
+                    $(messageClass).find('.close-button').addClass('hide');
+                }
+
+                if(isFloating){
+                    $(messageClass).addClass('alert-floating');
+                } else {
+                    $(messageClass).removeClass('alert-floating');
+                }
+            }
+
+            if(doShow){
+                $(messageClass).removeClass('hide');
+            } else {
+                $(messageClass).addClass('hide');
+            }
+        }
+
+        $(document).ready()
+        {
+            if(checkUrl()){
+                $selectize = $('.selectize').filter(function(elem){ return !$(this).parents('.ie8').length }).selectize({
+                    plugins: {'restore_on_backspace_advanced': { title: '' }, 'remove_button': {}, 'dropdown_header': {},
+                        'hint_dropdown': {}, 'wrap_scroll': {}, 'inputMaxlength': {}},
+                    inputMaxlength: 100,
+                    valueField: 'id',
+                    labelField: 'suggestion',
+                    searchField: 'suggestion',
+                    create: false,
+                    filter: false, // Sifter
+                    highlight: false,
+                    closeAfterSelect: true,
+                    selectOnTab: true,
+                    lockOptgroupOrder: true,
+                    optgroups: [
+                        {$order: 1, id: 'item_bucket',      name: 'Show all results for'},
+                        {$order: 2, id: 'degree_programme', name: 'Degree Programmes'},
+                        {$order: 3, id: 'degree_type',      name: 'Degree Qualifications'},
+                        {$order: 4, id: 'start_month',      name: 'Study Start Month'},
+                        {$order: 5, id: 'study_mode',       name: 'Mode of Study'},
+                        {$order: 6, id: 'learning_mode',    name: 'Type of Study'}
+                    ],
+                    optgroupField: 'grouping',
+                    optgroupValueField: 'id',
+                    optgroupLabelField: 'name',
+                    sortField: [{field: '$score', direction: 'desc'}, {field: 'suggestion', direction: 'asc'}],
+                    score: function(search){
+                        search = $selectize.did_you_mean || search;
+                        var regex = new RegExp('^' + search, 'i'); // Starts with
+                        return function(item){
+                            if(regex.test(item.suggestion)){
+                                return 1;
+                            }
+
+                            return 0;
+                        };
+                    },
+                    onDropdownOpen: function(){
+                        // Ensure we are scrolled to the top
+                        $('.selectize-dropdown-content').scrollTop(0);
+
+                        if(!isMobile && isLiteVersion === false
+                           && $('.selectize-dropdown.selectize').isInView() === false){
+                            if($('.search').offset().top > $(window).scrollTop()){
+                                $.scrollTo('.search', 1000, { interrupt: true, over: {top: -0.1} } );
+                            }
+                        }
+                    },
+                    onItemAdd: function(value, $item){
+                        updateSearchSummary(this.options[value].suggestion, this.options[value].type);
+                        clearOptions();
+                        if(isLiteVersion === true){
+                            $selectize.showHintDropdown(hintLoadingSearchResults);
+                        } else if(isset(this.options[value].hits) && this.options[value].hits == 1){
+                            $selectize.showHintDropdown(noMoreResultsText);
+                        } else {
+                            $selectize.showHintDropdown(hintTextAfterTokenAdd);
+                        }
+                        previousQuery = ''; // Reset
+
+                        $('.selectize-dropdown-header').addClass('hide');
+
+                        if(isLiteVersion === true){
+                            changePage(this.options[value].suggestion);
+                        } else if(!loadingUrlTerms){
+                            executeSearch();
+                        }
+                    },
+                    onItemRemove: function(value, $item){
+                        previousHintMessage = ''; // Clear
+                        updateSearchSummary(this.options[value].suggestion),
+                            hasRestoreOnBackspaceAdvancedPluginEnabled =
+                                ($.inArray('restore_on_backspace_advanced', $selectize.plugins.names) !== -1) ? true : false;
+
+                        if(hasRestoreOnBackspaceAdvancedPluginEnabled && Object.keys(previousItems).length > 0){
+                            previousItems = []; // Clear
+                        } else {
+                            clearOptions();
+                        }
+
+                        if($selectize.items.length){
+                            $selectize.showHintDropdown(hintTextAfterTokenAdd);
+                        } else {
+                            $selectize.showHintDropdown(hintText);
+                        }
+
+                        executeSearch();
+                    },
+                    onClear: function(){
+                        updateSearchSummary();
+                    },
+                    onType: function(str){
+                        clearOptions();
+                    },
+                    onFocus: function(){
+                        if($.trim($('.selectize input').val()) == ''){
+                            clearOptions();
+                        }
+                    },
+                    onBlur: function(){
+                        if($.trim($('.selectize input').val()) == ''){
+                            clearOptions();
+                            previousQuery = ''; // Reset
+                        }
+                    },
+                    render: {
+                        option: function($item, escape){
+                            var item = escape($item.suggestion);
+
+                            if(isset($item.extra)){
+                                var extra = escape($item.extra);
+                                if($item.type == 'ucas_code'){
+                                    item += ' - <span class="dark-grey no-background">' + extra + '</span>';
+                                } else {
+                                    item += ' <span class="dark-grey no-background">(' + extra + ')</span>';
+                                }
+                            }
+
+                            if($item.grouping == 'item_bucket'){
+                                if(isset($item.hits) && parseInt($item.hits) > 1){
+                                    item += ' <span class="dark-grey">(' + escape($item.hits) + ')</span>';
+                                } else if($item.type == 'injected_term'){
+                                    item = '"' + item + '"';
+                                }
+                            }
+
+                            var styleClass = '';
+                            if($item.type == 'keywords.keyword'){
+                                styleClass += 'capitalise';
+                            }
+
+                            return simpleDiv.format('', styleClass, item);
+                        },
+                        item: function($item, escape){
+                            var item = escape($item.suggestion);
+
+                            var styleClass = '';
+                            if($item.type == 'keywords.keyword'){
+                                styleClass += 'capitalise';
+                            }
+
+                            return simpleDiv.format('', styleClass, item);
+                        },
+                        optgroup_header: function(data, escape){
+                            var iconStyleClass = 'align-middle ml-4';
+
+                            if(data.id == 'degree_programme'){
+                                iconStyleClass += ' flaticon-graduate34'; // Square academic cap
+                            } else if(data.id == 'degree_type'){
+                                iconStyleClass += ' flaticon-rolled3';    // Paper scroll
+                            } else if(data.id == 'start_month'){
+                                iconStyleClass += ' flaticon-enter3';     // Open door
+                            } else if(data.id == 'study_mode'){
+                                iconStyleClass += ' flaticon-clock96';    // Clock
+                            } else if(data.id == 'learning_mode'){
+                                iconStyleClass += ' flaticon-pin56';      // Location pin
+                            }
+
+                            var icon = '';
+                            if(iconStyleClass != ''){
+                                icon = simpleIcon.format(iconStyleClass);
+                            }
+
+                            return simpleDiv.format('', 'optgroup-header', escape(data.name) + icon);
+                        }
+                    },
+                    load: function(query, callback){
+                        if(!query.length || previousHintMessage == noMoreResultsText)
+                            return callback();
+
+                        query = $.trim(query);
+                        if(query.length > 0){
+                            query = encodeURIComponent(query);
+
+                            var items = getSelectizeLabels($selectize.items);
+                            if(items.length > 0){
+                                items = items.map(encodeURIComponent);
+                                query += '/' + items.join('/');
+                            }
+
+                            $.xhrPool.abortSingle('selectize');
+                            clearTimeout(ajaxWaitingTimer); // Reset
+
+                            $.ajax({
+                                url: 'http://homepages.abdn.ac.uk/dev-prospectus-admin/api/v1/' + studyType + '/' + pageType + '/suggestions/' + query,
+                                type: 'GET',
+                                error: function(){
+                                    callback();
+                                },
+                                success: function(res){
+                                    if(res.did_you_mean){
+                                        $selectize.did_you_mean = res.did_you_mean;
+                                        $('.selectize-dropdown-header-label').html(didYouMean.format($selectize.did_you_mean));
+                                        $('.selectize-dropdown-header').removeClass('hide');
+                                    } else {
+                                        $selectize.did_you_mean = undefined;
+                                        $('.selectize-dropdown-header').addClass('hide');
+                                    }
+
+                                    if(isset(res.suggestions)){
+                                        clearTimeout(ajaxWaitingTimer); // Reset
+                                        toggleUserMessage(-1, false);
+                                        callback(res.suggestions);
+                                    }
+                                },
+                                beforeSend: function(jqXHR){
+                                    ajaxWaitingTimer = setTimeout(toggleUserMessage, 15000); // 15 seconds
+
+                                    if(!isset($.xhrPool.selectize)){
+                                        $.xhrPool.selectize = [];
+                                    }
+
+                                    $.xhrPool.selectize.push(jqXHR);
+                                },
+                                complete: function(jqXHR){
+                                    var index = $.inArray(jqXHR, $.xhrPool.selectize);
+
+                                    if(index > -1){
+                                        $.xhrPool.selectize.splice(index, 1);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                if($selectize[0] !== undefined){
+                    $selectize = $selectize[0].selectize;
+                    $('.selectize').on('click', function(event){
+                        $('.selectize-dropdown-hint').filter(function(elem){ return !$(this).parents(ignoredExplorerVersions).length }).removeClass('hide');
+                    });
+
+                    $('.selectize input').on('input', function(event){
+                        closeMultiselect();
+                    });
+
+                    $('.selectize-dropdown-content').scrollLock();
+
+                    $('.selectize-dropdown-header, .selectize-dropdown-header-close').addClass('hide');
+                } else {
+                    $selectize = undefined;
+                    $('.selectize').addClass('form-control').attr('onfocus', 'this.value = this.value;');
+                    $('.search-summary-text').addClass('hide');
+                    updateSearchSummary();
+                    $('.selectize').keydown(function(e){
+                        if(e.keyCode == 13){ // Return key
+                            if($selectize === undefined && isLiteVersion === true){
+                                changePage($.trim($('.selectize').val()));
+                            } else {
+                                executeSearch();
+                            }
+                        }
+                    });
+                }
+
+                $(document).on('mousedown', '.search-button, .clear-button, .view-change-button, .close-button', function(event){
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+
+                $(document).on('click', function(event){
+                    closeMultiselect();
+                });
+
+                function updateSearchSummary(token, tokenType){
+                    if(isLiteVersion === true){
+                        return;
+                    } else {
+                        $('.search-summary').removeClass('hide');
+                    }
+
+                    if($selectize !== undefined){
+                        if($selectize.items.length){
+                            var currentSearchText = $('.search-summary-text').html();
+
+                            // onItemRemove
+                            if(tokenType === undefined){
+                                currentSearchText = currentSearchText.split(', ');               // Make array
+                                currentSearchText = $.grep(currentSearchText, function(haystack){
+                                    haystack = $(haystack).text();                               // No html
+                                    var needle = $(currentSearchToken.format('', token)).text(); // No html
+                                    return haystack.indexOf(needle) < 0;                         // Remove deleted token
+                                });
+                                currentSearchText = currentSearchText.join(', ');                // Make string
+                                var searchText = currentSearchText;
+                                // onItemAdd
+                            } else {
+                                var styleClass = '';
+                                if(tokenType == 'keywords.keyword'){
+                                    styleClass += 'capitalise';
+                                }
+
+                                var searchText = currentSearchToken.format(styleClass, token);
+
+                                if(currentSearchText !== undefined){
+                                    searchText = currentSearchText + ', ' + searchText;
+                                }
+
+                                var searchType = (tokenType in searchTypes) ? searchTypes[tokenType] : ''; // Convert to human readable
+                                if(searchType != ''){
+                                    searchType = '(' + searchType + ')';
+                                    searchText += ' ' + currentSearchTokenType.format(searchType); // Add type to summary
+                                }
+                            }
+
+                            $('.search-summary').html(currentSearch.format(currentSearchWithTokens.format(searchText)));
+                        } else {
+                            $('.search-summary').html(currentSearch.format(currentSearchNoTokens.format(pageTypes[pageType])));
+                        }
+                    } else {
+                        $('.search-summary').html(currentSearch.format(''));
+                    }
+                }
+
+                function executeSearch(isForcedSearch, isViewChange, isReload){
+                    if(isLiteVersion === true){
+                        return;
+                    }
+
+                    var terms,
+                        currentOptions,
+                        viewChoice,
+                        isForcedSearch = (isForcedSearch === undefined) ? false : isForcedSearch,
+                        isViewChange   = (isViewChange === undefined)   ? false : isViewChange,
+                        giveFocus      = (giveFocus === undefined)      ? false : giveFocus,
+                        isReload       = (isReload === undefined)       ? false : isReload;
+
+                    if($selectize !== undefined){
+                        var items = getSelectizeLabels($selectize.items);
+
+                        if(items.length > 0){
+                            items = items.map(encodeURIComponent);
+                            terms = items.join('/');
+                        } else {
+                            terms = '';
+                        }
+                    } else if($('.selectize').val() != ''){
+                        terms = $('.selectize').val();
+                        terms = terms.split(',');
+                        terms = terms.map($.trim);
+                        terms = terms.map(encodeURIComponent);
+                        terms = terms.join('/');
+                    } else {
+                        terms = '';
+                    }
+
+                    // Unseen terms or override enabled so execute search
+                    if(terms != previousSearchTerms || isForcedSearch){
+                        if(!isViewChange){
+                            if($.inArray(pageType, [RESEARCH_AREA, SUBJECT_AREA]) !== -1 ||
+                               terms == '' ||
+                               (tableResultsAsColumns && previousSearchTerms != '' && $('.simple-view.active').length == 1)){
+                                viewChoice = 1;
+                                tableResultsAsColumns = true;
+                                tableResultsAsRows    = false;
+                            } else {
+                                viewChoice = 2;
+                                tableResultsAsColumns = false;
+                                tableResultsAsRows    = true;
+                            }
+
+                            // Always start at the first page
+                            tableResultsAsRowsOptions.pageNumber = tableResultsAsColumnsOptions.pageNumber = 1;
+                        } else {
+                            if(tableResultsAsColumns){
+                                viewChoice = 1;
+                            } else if(tableResultsAsRows){
+                                viewChoice = 2;
+                            }
+                        }
+
+                        previousSearchTerms = terms;
+                        var url = 'http://homepages.abdn.ac.uk/dev-prospectus-admin/api/v1/' + studyType + '/' + pageType + '/search';
+
+                        if(terms != ''){
+                            url += '/' + terms;
+                        }
+
+                        //------------------------------------------------------------------
+
+                        currentData = ($table === undefined) ? [] : $table.bootstrapTable('getData');
+
+                        switch(pageType){
+                            case RESEARCH_AREA:
+                            case SUBJECT_AREA:
+                                $('.view-change-buttons').addClass('hide');
+                                break;
+                            case DEGREE_PROGRAMME:
+                            default:
+                                $('.view-change-buttons').removeClass('hide');
+                        }
+
+                        switch(viewChoice){
+                            case 1:
+                                if(isViewChange && currentData.length > 0){
+                                    tableResultsAsColumnsOptions.data = currentData;
+                                    tableResultsAsColumnsOptions.url = undefined;
+                                } else {
+                                    tableResultsAsColumnsOptions.url = url;
+                                }
+
+                                if(pageType == DEGREE_PROGRAMME){
+                                    if(studyType == UNDERGRADUATE){
+                                        tableResultsAsColumnsOptions.columns = undergraduateColumns;
+                                    } else if(studyType == POSTGRADUATE_TAUGHT){
+                                        tableResultsAsColumnsOptions.columns = postgraduateTaughtColumns;
+                                    }
+
+                                    tableResultsAsColumnsOptions.sortName = ''; // Clear
+                                } else if(pageType == SUBJECT_AREA){
+                                    if(studyType == UNDERGRADUATE){
+                                        tableResultsAsColumnsOptions.detailView = true;
+                                        tableResultsAsColumnsOptions.detailFormatter = 'columnFormatter';
+                                        tableResultsAsColumnsOptions.columns = undergraduateSubjectAreaColumns;
+                                    } else if(studyType == POSTGRADUATE_RESEARCH){
+                                        tableResultsAsColumnsOptions.columns = postgraduateResearchSubjectAreaColumns;
+                                    }
+
+                                    tableResultsAsColumnsOptions.sortName = 'items.subject_area.0.title';
+                                } else if(pageType == RESEARCH_AREA){
+                                    if(studyType == POSTGRADUATE_RESEARCH){
+                                        tableResultsAsColumnsOptions.columns = postgraduateResearchSubjectAreaColumns;
+                                    }
+
+                                    tableResultsAsColumnsOptions.sortName = 'items.subject_area.0.title';
+                                }
+
+                                if(isset($table)){
+                                    $table.bootstrapTable('destroy');
+                                    $table.removeClass('table-results-as-rows');
+                                }
+
+                                if(terms == ''){
+                                    if(!isViewChange){
+                                        toggleViewButton();
+                                    }
+
+                                    if(pageType == DEGREE_PROGRAMME){
+                                        tableResultsAsColumnsOptions.sortName = 'items.programme_title.0.title';
+                                    }
+                                }
+
+                                currentOptions = tableResultsAsColumnsOptions;
+                                $('.table-results').addClass('table-results-as-columns');
+                                break;
+                            default:
+                                if(isViewChange && currentData.length > 0){
+                                    tableResultsAsRowsOptions.data = currentData;
+                                    tableResultsAsRowsOptions.url = undefined;
+                                } else {
+                                    tableResultsAsRowsOptions.url = url;
+                                }
+
+                                if(isset($table)){
+                                    $table.bootstrapTable('destroy');
+                                    $table.removeClass('table-results-as-columns');
+                                }
+
+                                if(!isViewChange && terms != ''){
+                                    toggleViewButton(true);
+                                }
+
+                                tableResultsAsRowsOptions.sortName = ''; // Clear
+                                if(terms == ''){
+                                    tableResultsAsRowsOptions.sortName = 'items.programme_title.0.title';
+                                }
+
+                                currentOptions = tableResultsAsRowsOptions;
+                                $('.table-results').addClass('table-results-as-rows');
+                        }
+
+                        hasUsedLocalStorage = false;
+
+                        if(terms == ''){
+                            updateSearchSummary();
+
+                            if(useLocalStorage && Modernizr.localstorage && localStorage.getItem(localStorageCacheName)){
+                                var now = moment().unix();
+                                var expiresAt = moment(localStorage.getItem(localStorageCacheName + '_expiresAt'), localStorageDateFormat).unix();
+
+                                if(now > expiresAt){
+                                    localStorage.removeItem(localStorageCacheName);
+                                    localStorage.removeItem(localStorageCacheName + '_expiresAt');
+                                } else {
+                                    hasUsedLocalStorage = true;
+                                    res = JSON.parse(localStorage.getItem(localStorageCacheName));
+                                    updateSearchResultsTotal(res.length);
+                                    currentOptions.data = res;
+                                    currentOptions.url  = undefined;
+                                    $.xhrPool.abortSingle('bootstrapTable');
+                                }
+                            }
+                        }
+
+                        $table = $('.table-results').bootstrapTable(currentOptions).on('page-change.bs.table', function(e, number, size){
+                            if(Modernizr.localstorage){
+                                size = String(size); // Parse as String
+
+                                if($.inArray(size, pageList) !== -1){
+                                    localStorage.setItem(localStoragePageSizeCacheName, size);
+                                    // Save
+                                    tableResultsAsRowsOptions.pageSize   = tableResultsAsColumnsOptions.pageSize   = size;
+                                    tableResultsAsRowsOptions.pageNumber = tableResultsAsColumnsOptions.pageNumber = number;
+                                } else {
+                                    localStorage.removeItem(localStoragePageSizeCacheName);
+                                }
+                            }
+                        }).on('sort.bs.table', function(e, name, order){
+                            // Reset
+                            tableResultsAsRowsOptions.pageNumber = tableResultsAsColumnsOptions.pageNumber = 1;
+                        });
+
+                        if(!isViewChange && !hasUsedLocalStorage){
+                            toggleToolbar('disabled', true);
+
+                            if($('.multiselect').length == 0){
+                                $('.study-type-dropdown').prop('disabled', 'disabled');
+                            }
+                        }
+
+                        //------------------------------------------------------------------
+
+                        $('.search-title').text(studyTypes[studyType] + ' Search Results');
+                        if(!isReload){
+                            setUrlTerms(terms, useQueryString);
+                        }
+
+                        if(isForcedSearch){
+                            $('.selectize-dropdown-hint').filter(function(elem){ return !$(this).parents(ignoredExplorerVersions).length }).removeClass('hide');
+
+                            if(!isMobile && giveFocus){
+                                $selectize.focus();
+                            }
+                        }
+                    }
+                }
+
+                $('.search-button').click(function(){
+                    if($selectize !== undefined){
+                        if($selectize.hasOptions && $.trim($('.selectize input').val()) != ''){
+                            if($selectize.isOpen){
+                                var firstValue = $('.selectize-dropdown-content').find('div[data-value]').first().attr('data-value');
+                                $selectize.addItems(firstValue);    // By default select first suggestion
+
+                                if($selectize.items.length){
+                                    $selectize.setTextboxValue(''); // Clear unmatched input
+                                    $selectize.close();             // Hide dropdown
+                                }
+                            } else {
+                                $selectize.open();
+                            }
+                        } else if(!isMobile){
+                            $selectize.focus();
+                        }
+
+                        $selectize.showHintDropdown(searchingStillInProgressText, false, false);
+                    } else {
+                        if(isLiteVersion === true){
+                            changePage($.trim($('.selectize').val()));
+                        } else {
+                            executeSearch();
+                        }
+                    }
+                });
+
+                $('.clear-button').click(function(){
+                    clearInput();
+                    executeSearch();
+                });
+
+                function changePage(term){
+                    if(term){
+                        term = term.replace(/ /g, '-');
+                        window.location.href = 'http://homepages.abdn.ac.uk/jonathan.goode/pages/' + studyType + '/' + pageType + '/' + term;
+                    }
+                }
+
+                // ---------------------------------------------------
+
+                if((!Modernizr.history && isLiteVersion === false) || (pageType == SUBJECT_AREA && studyType == UNDERGRADUATE)){
+                    $('.study-type-dropdown-input-group').addClass('hide');
+                } else {
+                    $('.study-type-dropdown').multiselect({
+                        inheritClass: true,
+                        buttonClass: 'btn btn-info no-bold',
+                        onChange: function(option, checked, select){
+                            previousHintMessage = ''; // Clear
+
+                            if($selectize !== undefined){
+                                clearOptions();
+                                var current = $.trim($('.selectize input').val());
+                                $('.selectize input')
+                                    .val('')
+                                    .keyup()
+                                    .val(current)
+                                    .keyup();
+
+                                if(!isMobile){
+                                    $selectize.focus();
+                                }
+                            }
+
+                            setUrlStudyType($(option).val());
+                        }
+                    });
+
+                    $('.study-type-dropdown').on('click', function(event){
+                        event.stopPropagation();
+                        $(this).next('.dropdown-menu').toggle();
+                    });
+                }
+            } // checkUrl() === true
+        }
+
+        $(window).load(function(){
+            // On page load
+            if(isUrlSet){
+                $('.loader').hide();
+                $('.row').filter(function(elem){ return !$(this).parents(ignoredExplorerVersions).length }).removeClass('hide');
+
+                if(document.hasFocus()){
+                    $('.selectize-dropdown-hint').filter(function(elem){ return !$(this).parents(ignoredExplorerVersions).length }).removeClass('hide');
+
+                    if(!isMobile && isLiteVersion === false){
+                        $('.selectize, .selectize input').focus();
+                    }
+
+                    delay(function(){ $('.selectize').removeAttr('onfocus') }, 10); // IE8
+                }
+            }
+
+            if(!isUrlSet || $('.row').not('.hide').length == 0){
+                $('.loader').hide();
+                // Display a message to the user that there has been a problem
+                toggleUserMessage(2);
+            }
+
+            $('.top_of_page').on('click', function(event){
+                event.preventDefault();
+                event.stopPropagation();
+                window.scroll(0, 0);
+            });
+
+            $('.content').addClass('open-sans-font');
+        });
+
+        Detectizr.detect({detectScreen: false});
+    </script></body>
+</html>
