@@ -218,9 +218,15 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release Notes
 
+### v1.2.3
+
+- Fixed error in IE6, IE7, and other unsupported browsers which fail at test iframe creation (issue #2)
+- Prevented IE6, IE7 from crashing when loading the component
+- Fixed a rare bug in IE9 where the load event wouldn't fire (issue #3)
+
 ### v1.2.2
 
-- Guarded against exceptions in unsupported, ancient browsers; added a fallback for document size (fixing #2)
+- Guarded against exceptions in unsupported, broken browsers; added a fallback for document size
 
 ### v1.2.0
 
