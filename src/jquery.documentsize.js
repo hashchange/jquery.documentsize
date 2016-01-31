@@ -16,6 +16,7 @@
         _supportsWindowInnerWidth,
         _supportsSubpixelAccuracy,
         elementNameForDocSizeQuery,
+        ieVersion,
         useGetComputedStyle = !! window.getComputedStyle;
 
     /**
@@ -688,24 +689,62 @@
     }
 
     /**
-     * Checks if we are dealing with a truly ancient version of IE (< IE8).
+     * Returns the IE version, or false if the browser is not IE.
      *
-     * This is done by browser sniffing, rather than a test tailored to the use case. That's because the use case is
-     * preventing the browser from crashing.
+     * The result is determined by browser sniffing, rather than a test tailored to the use case. The function must only
+     * be called as a last resort, for scenarios where there is no alternative to browser sniffing.
+     *
+     * These scenarios include:
+     *
+     * - Preventing IE6 and IE7 from crashing
+     * - Preventing IE9 from blocking or delaying the load event
      *
      * The test follows the MSDN recommendation at https://msdn.microsoft.com/en-us/library/ms537509(v=vs.85).aspx#parsingua
+     * The result is cached.
+     *
+     * @returns {number|boolean}
      */
-    function isAncientIE () {
-        var userAgentTestRx,
-            ieVersion = false,
+    function getIEVersion () {
+        var userAgent, userAgentTestRx;
+
+        if ( ieVersion === undefined ) {
+
+            ieVersion = false;
             userAgent = navigator && navigator.userAgent;
 
-        if ( navigator && navigator.appName === "Microsoft Internet Explorer" && userAgent ) {
-            userAgentTestRx = new RegExp( "MSIE ([0-9]{1,}[\.0-9]{0,})" );                                       // jshint ignore:line
-            if ( userAgentTestRx.exec( userAgent ) != null ) ieVersion = parseFloat( RegExp.$1 );
+            if ( navigator && navigator.appName === "Microsoft Internet Explorer" && userAgent ) {
+                userAgentTestRx = new RegExp( "MSIE ([0-9]{1,}[\.0-9]{0,})" );                          // jshint ignore:line
+                if ( userAgentTestRx.exec( userAgent ) != null ) ieVersion = parseFloat( RegExp.$1 );
+            }
+
         }
 
+        return ieVersion;
+    }
+
+    /**
+     * Checks if we are dealing with a truly ancient version of IE (< IE8).
+     *
+     * This is done by browser sniffing, rather than a test tailored to the use case. Use it only if there is no
+     * alternative.
+     *
+     * @returns {boolean}
+     */
+    function isAncientIE () {
+        var ieVersion = getIEVersion();
         return ieVersion && ieVersion < 8;
+    }
+
+    /**
+     * Checks if the browser is IE9.
+     *
+     * This is done by browser sniffing, rather than a test tailored to the use case. Use it only if there is no
+     * alternative.
+     *
+     * @returns {boolean}
+     */
+    function isIE9 () {
+        return getIEVersion() === 9;
     }
 
 
@@ -713,10 +752,19 @@
     // is best to do it up front because the test touches the DOM, so let's get it over with before people set up
     // handlers for mutation events and such.
     //
-    // Skipped for ancient versions of IE (IE6, IE7). IE6 and IE7 can't handle the feature tests on DOM ready - they
-    // crash right away. Later on, the tests are ok. So we don't run them preemptively, but rather on demand when the
-    // first document size query is made.
-    if ( typeof $ === "function" && !isAncientIE() ) {
+    // This step has to be skipped for the following browsers:
+    //
+    // - ancient versions of IE (IE6, IE7).
+    //   IE6 and IE7 can't handle the feature tests on DOM ready - they crash right away. Later on, the tests are ok.
+    //
+    // - IE9.
+    //   If the feature tests were run on DOM ready, the window load event would become unreliable. The event might not
+    //   fire until the user moves the mouse over the document. This bug is rare and not triggered by jQuery.documentSize
+    //   alone; third-party code likely plays a role. The exact circumstances are not clear - see issue #3.
+    //
+    // For these browsers, we don't run the feature tests preemptively. Instead, we do it on demand, when the first
+    // document size query is made.
+    if ( typeof $ === "function" && !isAncientIE() && !isIE9() ) {
 
         // Try-catch acts as a safety net for unsupported, broken browsers
         try {
