@@ -103,7 +103,7 @@ The stable version of jQuery.documentSize is available in the `dist` directory (
 
 jQuery.documentSize has been tested with 
 
-- 2015 versions of Chrome, Firefox, Safari, and Opera on the desktop
+- 2015, 2016 versions of Chrome, Firefox, Safari, and Opera on the desktop
 - IE8+, Edge
 - Safari on iOS 8, iOS 9; Chrome and Firefox on Android 5
 - PhantomJS, SlimerJS
@@ -271,7 +271,7 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 MIT.
 
-Copyright (c) 2015, 2016 Michael Heim.
+Copyright (c) 2015-2016 Michael Heim.
 
 Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [See file][data-provider.js].
 
