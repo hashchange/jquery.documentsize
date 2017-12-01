@@ -1,12 +1,10 @@
 # jQuery.documentSize
 
-<small>[Usage][usage] – [Why?][why] – [Setup][setup] – [Browser support][browsers] – [Performance][performance] –  [Precision][precision] – [Spec][spec] – [Build and test][build]</small>
+<small>[Usage][usage] – [Demo][demo] – [Why?][why] – [Setup][setup] – [Browser support][browsers] – [Performance][performance] –  [Precision][precision] – [Spec][spec] – [Build and test][build]</small>
 
 Detects the real width and height of the document. And the real width and height of the browser window.
 
 Works cross-browser, and returns the correct result in even the most exotic scenarios. It resolves the [shortcomings of jQuery][why] in that regard. And actually, because jQuery.documentSize is written in pure Javascript, you can use it [without jQuery][setup], too.
-
-If you are a happy user of this project already, you can support its development by [donating to it][donations]. You absolutely don't have to, of course, but perhaps it is something you [might actually want to do][donations].
 
 ## Usage
 
@@ -61,6 +59,10 @@ Call `$.scrollbarWidth()` to retrieve the size (width) of the scrollbar for a gi
 Some browsers don't provide permanent scrollbars, and instead show them as a temporary overlay while scrolling the page. In that case, scroll bar size is reported as 0. Showing zero-width overlays is typical of mobile browsers, and also the default in current versions of OS X.
 
 Watch out, though: `$.scrollbarWidth()` returns a browser-specific constant. It reports how wide the scroll bar is, or would be, if the browser displays it. It does **not** tell you if scroll bars are actually present in the window. For that kind of info, please [refer to the methods][jQuery.isInView-scrollbar] of another component, [jQuery.isInView][].
+
+## Demo
+
+There is an interactive demo at [JS Bin][demo-jsbin] or [Codepen][demo-codepen] which you can play with.
 
 ## What does it do that jQuery doesn't?
 
@@ -202,18 +204,6 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
-## Facilitating development
-
-To my own surprise, [a kind soul][donations-idea] wanted to donate to the project, but there hadn't been a link. [Now there is.][donations-paypal-link]
-
-Please don't feel obliged in the slightest. The license here is [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
-
-Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. These qualities may not seem particularly fascinating, but I put a lot of emphasis on them because they make all the difference in production. They are also rather costly to maintain, time-wise.
-
-That's why donations are welcome, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
-
-[![Donate with Paypal][donations-paypal-button]][donations-paypal-link]
-
 ## Release Notes
 
 ### v1.2.3
@@ -279,6 +269,7 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [dist-amd-prod]: https://raw.github.com/hashchange/jquery.documentsize/master/dist/amd/jquery.documentsize.min.js "jquery.documentsize.min.js, AMD build"
 
 [usage]: #usage "Usage"
+[demo]: #demo "Demo"
 [why]: #what-does-it-do-that-jquery-doesnt "What does it do that jQuery doesn't?"
 [setup]: #dependencies-and-setup "Dependencies and setup"
 [browsers]: #browser-support "Browser support"
@@ -298,6 +289,8 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 
 [w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
 [demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/require-config.js "Demo: AMD setup with Zepto"
+[demo-jsbin]: http://jsbin.com/dujuyi/2 "jQuery.documentSize demo, using Zepto (AMD) – JSBin"
+[demo-codepen]: http://codepen.io/hashchange/full/xGomQQ "jQuery.documentSize demo, using Zepto (AMD) – Codepen"
 
 [data-provider.js]: https://github.com/hashchange/jquery.documentsize/blob/master/spec/helpers/data-provider.js "Source code of data-provider.js"
 
@@ -309,9 +302,5 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [Jasmine]: http://jasmine.github.io/ "Jasmine: Behavior-Driven JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
 
-[donations]: #facilitating-development "Facilitating development"
-[donations-idea]: https://github.com/hashchange/jquery.documentsize/issues/1 "jQuery.documentSize, issue #1: Thank you!"
-[donations-paypal-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVWB87C62TUXU "Donate with Paypal"
-[donations-paypal-button]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif "Donate with Paypal"
 [license]: #license "License"
 [hashchange-projects-overview]: http://hashchange.github.io/ "Hacking the front end: Backbone, Marionette, jQuery and the DOM. An overview of open-source projects by @hashchange."
