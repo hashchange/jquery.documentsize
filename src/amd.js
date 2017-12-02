@@ -14,11 +14,11 @@
         ], factory );
 
     }
-}( this, function ( jQuery ) {
+}( this, function ( $ ) {
     "use strict";
 
     // @include jquery.documentsize.js
-    return jQuery.documentSize;
+    return $;
 
 } ));
 
