@@ -591,6 +591,16 @@ function testElementKeepsBottomMargin () {
 }
 
 /**
+ * Tests if the browser supports the window.visualViewport API, which ensures access to window.visualViewport.height and
+ * window.visualViewport.width.
+ *
+ * @returns {boolean}
+ */
+function supportsVisualViewportAPI () {
+    return !!window.visualViewport;
+}
+
+/**
  * Tests if the browser supports window.innerHeight and window.innerWidth.
  *
  * - IE8 does not have these properties.
@@ -600,6 +610,20 @@ function testElementKeepsBottomMargin () {
  *   + https://developer.mozilla.org/en-US/docs/Web/API/Window.innerWidth
  *   + https://developer.mozilla.org/en-US/docs/Web/API/Window.innerHeight
  *   + https://bugzilla.mozilla.org/show_bug.cgi?id=641188
+ *
+ * - The method does NOT test if the properties return the size of the visual viewport, or the layout viewport. All
+ *   browsers used to return the visual viewport dimensions, but Chrome on Android, beginning with version 61, has
+ *   broken with that convention and returns the dimensions of the layout viewport instead. Other vendors may or may not
+ *   follow suit.
+ *
+ *   That breaking change goes along with the introduction of the visualViewport API. For consistent behaviour, call
+ *   supportsVisualViewportAPI() and use that API if it is available. Fall back to window.innerWidth/Height if it is
+ *   not.
+ *
+ *   For more information on visualViewport vs window.innerWidth/Height, see
+ *
+ *   + https://www.quirksmode.org/blog/archives/2017/09/chrome_breaks_v.html
+ *   + https://developers.google.com/web/updates/2017/09/visual-viewport-api
  *
  * @returns {boolean}
  */

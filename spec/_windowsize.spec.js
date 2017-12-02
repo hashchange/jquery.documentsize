@@ -25,7 +25,9 @@
 
     describe( 'windowWidth(), windowHeight() geometry.', function () {
 
-        var msgNoWindowInnerHeightWidth = "Skipped because the browser does not support window.innerHeight and window.innerWidth (either absent or buggy)",
+        var msgNoWindowVisualViewportAPI = "Skipped because the browser does not support the window.visualViewport API",
+            msgNoWindowInnerHeightWidth = "Skipped because the browser does not support window.innerHeight and window.innerWidth (because the methods are absent, or buggy, or of altered behaviour and superseded by the window.visualViewport API)",
+            msgSupersededWindowInnerHeightWidth = "Skipped because window.innerHeight and window.innerWidth are of altered behaviour and superseded by the window.visualViewport API",
             msgNotMobile = "Skipped because the browser is not running on a phone or tablet",
             msgNotWorkingInAndroid = "Skipped because Android browser quirks make this test fail even though everything is working as it should";
 
@@ -126,7 +128,54 @@
 
             } );
 
-            describeIf( supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
+            describeIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, 'Window size is validated against window.visualViewport.height, window.visualViewport.width.', function () {
+
+                // NB Unlike window.innerHeight and window.innerWidth, the methods of the window.visualViewport API
+                // return the dimensions of the browser window without the area covered by scroll bars. There is no need
+                // to compensate for scroll bars.
+
+                beforeAll( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 64 )
+                        .border( 32 )
+                        .padding( 16 );
+                    $body
+                        .margin( 8 )
+                        .border( 4 )
+                        .padding( 2 );
+
+                } );
+
+                describe( '$.windowHeight() matches window.visualViewport.height', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                    } );
+
+                } );
+
+                describe( '$.windowWidth() matches window.visualViewport.width', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                    } );
+
+                } );
+
+            } );
+
+            describeIf( !supportsVisualViewportAPI() && supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
 
                 // NB window.innerHeight, window.innerWidth return the dimensions of the browser window including scroll
                 // bars. We must compensate for that.
@@ -204,7 +253,7 @@
                 //
                 // These tests don't work in Android because getBoundingClientRect() behaves differently there.
                 //
-                // In iOs, the values returned by gBCR are relative to the visual viewport, ie the real size of the
+                // In iOS, the values returned by gBCR are relative to the visual viewport, ie the real size of the
                 // window, expressed in CSS pixels. In Android, however, they are relative to the layout viewport and
                 // therefore don't reflect zoom state or the real, visible window size.
                 //
@@ -356,7 +405,33 @@
                     restoreMetaViewport();
                 } );
 
-                describe( '$.windowHeight() matches window.innerHeight, compensated for scroll bar size,', function () {
+                describeIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, '$.windowHeight() matches window.visualViewport.height,', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 1000 );
+                        expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                    } );
+
+                } );
+
+                describeIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, '$.windowWidth() matches window.visualViewport.width,', function () {
+
+                    it( 'before the window content has been scrolled down', function () {
+                        expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                    } );
+
+                    it( 'after the window content has been scrolled down', function () {
+                        _window.scrollTo( 0, 500 );
+                        expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                    } );
+
+                } );
+
+                describeUnless( supportsVisualViewportAPI(), msgSupersededWindowInnerHeightWidth, '$.windowHeight() matches window.innerHeight, compensated for scroll bar size,', function () {
 
                     it( 'before the window content has been scrolled down', function () {
                         expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight - $.scrollbarWidth() );
@@ -369,7 +444,7 @@
 
                 } );
 
-                describe( '$.windowWidth() matches window.innerWidth, compensated for scroll bar size,', function () {
+                describeUnless( supportsVisualViewportAPI(), msgSupersededWindowInnerHeightWidth, '$.windowWidth() matches window.innerWidth, compensated for scroll bar size,', function () {
 
                     it( 'before the window content has been scrolled down', function () {
                         expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth - $.scrollbarWidth() );
@@ -477,11 +552,40 @@
         //
         //    NO TESTS EXPECTING MINIMAL UI BEYOND THIS POINT!
         //
+        //    NB Minimal UI has been observed to persist in Android.
+        //
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         describe( 'The window is known to be without scroll bars.', function () {
 
-            describeIf( supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
+            describeIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, 'Window size is validated against window.visualViewport.height, window.visualViewport.width.', function () {
+
+                beforeEach( function () {
+                    // Must not be confused by borders, margins, padding on both html and body, so let's set them.
+                    $html
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+                    $body
+                        .margin( 1 )
+                        .border( 1 )
+                        .padding( 1 );
+
+                    // Setting the body to a very small size, so that scroll bars are guaranteed to be absent.
+                    $body.contentBox( 100, 100 );
+                } );
+
+                it( '$.windowHeight() equals window.visualViewport.height', function () {
+                    expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                } );
+
+                it( '$.windowWidth() equals window.visualViewport.width', function () {
+                    expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                } );
+
+            } );
+
+            describeIf( !supportsVisualViewportAPI() && supportsWindowInnerHeight(), msgNoWindowInnerHeightWidth, 'Window size is validated against window.innerHeight, window.innerWidth.', function () {
 
                 beforeEach( function () {
                     // Must not be confused by borders, margins, padding on both html and body, so let's set them.
@@ -626,11 +730,19 @@
                     restoreMetaViewport();
                 } );
 
-                it( '$.windowHeight() equals window.innerHeight', function () {
+                itIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, '$.windowHeight() equals window.visualViewport.height', function () {
+                    expect( $.windowHeight( _window ) ).toEqual( _window.visualViewport.height );
+                } );
+
+                itIf( supportsVisualViewportAPI(), msgNoWindowVisualViewportAPI, '$.windowWidth() equals window.visualViewport.width', function () {
+                    expect( $.windowWidth( _window ) ).toEqual( _window.visualViewport.width );
+                } );
+
+                itUnless( supportsVisualViewportAPI(), msgSupersededWindowInnerHeightWidth, '$.windowHeight() equals window.innerHeight', function () {
                     expect( $.windowHeight( _window ) ).toEqual( _window.innerHeight );
                 } );
 
-                it( '$.windowWidth() equals window.innerWidth', function () {
+                itUnless( supportsVisualViewportAPI(), msgSupersededWindowInnerHeightWidth, '$.windowWidth() equals window.innerWidth', function () {
                     expect( $.windowWidth( _window ) ).toEqual( _window.innerWidth );
                 } );
 
@@ -642,10 +754,22 @@
                     expect( $.windowWidth( { viewport: "visual" }, _window ) ).toEqual( $.windowWidth( _window ) );
                 } );
 
-                it( '$.windowHeight( { viewport: "layout" } ) equals the layout viewport height, document.documentElement.clientHeight', function () {
-                    // We don't have to contend with minimal UI here because we have already snapped out of it.
-                    var expected = _document.documentElement.clientHeight;
-                    expect( $.windowHeight( { viewport: "layout" }, _window ) ).toEqual( expected );
+                it( '$.windowHeight( { viewport: "layout" } ) equals the layout viewport height, derived from document.documentElement.clientHeight and adjusted for minimal UI if applicable', function () {
+                    // For iOS alone, we wouldn't have to contend with minimal UI here because we have already snapped
+                    // out of it. But Chrome on Android has been observed to stay in minimal UI, so we need to do the
+                    // whole dance.
+
+                    // See the corresponding test of a page which is zoomed in (above) for an explanation of the minimal
+                    // UI adjustment.
+
+                    var aspectRatio = $.windowHeight( _window ) / $.windowWidth( _window ),
+                        calculatedHeight = _document.documentElement.clientWidth * aspectRatio,
+                        clientHeight = _document.documentElement.clientHeight,
+
+                        expected = ( clientHeight > calculatedHeight - 4 && clientHeight < calculatedHeight + 4 ) ? clientHeight : calculatedHeight;
+
+                    // Allow for rounding errors in the value returned by $.windowHeight() (tolerance +/-1px).
+                    expect( $.windowHeight( { viewport: "layout" }, _window ) ).toBeWithinRange( expected - 1, expected + 1 );
                 } );
 
                 it( '$.windowWidth( { viewport: "layout" } ) equals the layout viewport width, document.documentElement.clientWidth', function () {
