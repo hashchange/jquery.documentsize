@@ -54,7 +54,7 @@ module.exports = function (grunt) {
       options: {
         banner: "<%= meta.banner %>",
         mangle: {
-          except: ['jQuery', 'Zepto', 'Backbone', '_']
+          reserved: ['jQuery', 'Zepto', 'Backbone', '_']
         },
         sourceMap: true
       },
