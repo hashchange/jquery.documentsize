@@ -202,6 +202,9 @@
      * layout viewport (see Peter-Paul Koch, The Mobile Web Handbook, Chapter 3: Viewports, Section "Minimum and Maximum
      * Zoom").
      *
+     * If the visualViewport API is supported, the calculation is skipped, and the pinch zoom factor is taken directly
+     * form visualViewport.scale.
+     *
      * Ignores page zoom on the desktop (returning a zoom factor of 1). For the distinction between pinch and page zoom,
      * again see Chapter 3 in PPK's book.
      *
@@ -213,12 +216,13 @@
     function getPinchZoomFactor ( _window, options ) {
         var ddeClientWidth, windowInnerWidth,
             asRange = options && options.asRange,
+            nativeFactor = ( _window || window ).visualViewport && ( _window || window ).visualViewport.scale,
             factors = {
-                calculated: 1,
-                min: 1,
-                max: 1
+                calculated: nativeFactor || 1,
+                min: nativeFactor || 1,
+                max: nativeFactor || 1
             },
-            skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth();
+            skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth() || nativeFactor;
 
         if ( !skip ) {
 
