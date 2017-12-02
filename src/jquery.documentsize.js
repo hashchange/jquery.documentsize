@@ -342,7 +342,10 @@
     }
 
     /**
-     * Checks if the browser supports window.innerWidth and window.innerHeight.
+     * Checks if the browser supports window.visualViewport.width and window.visualViewport.height, or window.innerWidth
+     * and window.innerHeight otherwise.
+     *
+     * See getWindowInnerSize() for the distinction between the visualViewport API and window.innerWidth/Height.
      *
      * The check is run on demand, rather than up front while loading the component, because the window properties can
      * behave strangely in the early stages of opening a window. The component might be loaded in the document head,
@@ -566,7 +569,7 @@
     }
 
     /**
-     * Returns window.innerWidth.
+     * Returns window.visualViewport.width if available, or window.innerWidth otherwise.
      *
      * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
      * values).
@@ -579,7 +582,7 @@
     }
 
     /**
-     * Returns window.innerHeight.
+     * Returns window.visualViewport.height if available, or window.innerHeight otherwise.
      *
      * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
      * values).
@@ -592,17 +595,30 @@
     }
 
     /**
-     * Returns window.innerWidth or window.innerHeight, depending on the dimension argument.
+     * Returns window.visualViewport.width if available, or window.innerWidth otherwise, for width. Likewise, it
+     * returns window.visualViewport.height or window.innerHeight for height. The dimension argument determines whether
+     * width or height is returned.
      *
      * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
      * values).
+     *
+     * If the visualViewport API is available, it is preferred over window.innerWidth/Height. That's because Chrome,
+     * from version 62, has changed the behaviour of window.innerWidth/Height, which used to return the size of the
+     * visual viewport. In Chrome, it now returns the size of the layout viewport, breaking compatibility with all other
+     * browsers and its own past behaviour. Other browsers may follow suit, though. See
+     *
+     * - https://www.quirksmode.org/blog/archives/2017/09/chrome_breaks_v.html
+     * - https://developers.google.com/web/updates/2017/09/visual-viewport-api
+     * - https://bugs.chromium.org/p/chromium/issues/detail?id=767388#c8
      *
      * @param   {string} dimension  must be "Width" or "Height" (upper case!)
      * @param   {Window} [_window=window]
      * @returns {number}
      */
     function getWindowInnerSize ( dimension, _window ) {
-        var size = ( _window || window )[ "inner" + dimension];
+        var size =  ( _window || window ).visualViewport ?
+                    ( _window || window ).visualViewport[ dimension.toLowerCase() ] :
+                    ( _window || window )[ "inner" + dimension];
 
         // Check for fractions. Exclude undefined return values in browsers which don't support window.innerWidth/Height.
         if ( size ) checkForFractions( size );
