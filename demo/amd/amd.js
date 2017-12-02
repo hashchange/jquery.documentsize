@@ -65,6 +65,10 @@ require( [
             $window = $( window );
 
 
+        if ( window.visualViewport ) {
+            window.visualViewport.addEventListener( "scroll", _.throttle( update, 100 ) );
+            window.visualViewport.addEventListener( "resize", _.throttle( update, 100 ) );
+        }
         $window.on( "scroll", _.throttle( update, 100 ) );
         $window.on( "resize", _.throttle( update, 100 ) );
         $window.on( "orientationchange", update );
@@ -164,9 +168,12 @@ require( [
         // Faking "position: fixed" with Javascript. position:fixed didn't work as intended in Chrome on Android, hence
         // the hack.
         function fixPosition ( $elem, cssOffset ) {
+            var visualTop = window.visualViewport ? window.visualViewport.pageTop : Math.max( dde.scrollTop, body.scrollTop ),
+                visualLeft = window.visualViewport ? window.visualViewport.pageLeft : Math.max( dde.scrollLeft, body.scrollLeft );
+
             $elem.css( {
-                top: Math.max( dde.scrollTop, body.scrollTop ) + cssOffset.top,
-                left: Math.max( dde.scrollLeft, body.scrollLeft ) + cssOffset.left
+                top: visualTop + cssOffset.top,
+                left: visualLeft + cssOffset.left
             } );
         }
 
