@@ -23,6 +23,7 @@ require( [
             $layoutViewportWidth = $( ".layoutViewport .width" ),
 
             $pinchZoomFactor = $( ".zoom .pinch" ),
+            $nativePinchZoomFactor = $( ".zoom .nativePinch" ),
 
             $gBCRTop = $( ".gBCR .top" ),
             $gBCRLeft = $( ".gBCR ._left" ),
@@ -135,7 +136,8 @@ require( [
 
         function logValues () {
 
-            var zoomFactor, gBCR;
+            var zoomFactor, nativeZoomFactor, gBCR,
+                supportsVisualViewportAPI = !!window.visualViewport;
 
             $documentHeight.text( $.documentHeight() );
             $documentWidth.text( $.documentWidth() );
@@ -151,6 +153,9 @@ require( [
 
             zoomFactor = $.pinchZoomFactor();
             $pinchZoomFactor.text( Math.round( zoomFactor * 10000 ) / 10000 );
+
+            nativeZoomFactor = supportsVisualViewportAPI && window.visualViewport.scale;
+            $nativePinchZoomFactor.text( supportsVisualViewportAPI ? Math.round( nativeZoomFactor * 10000 ) / 10000 : "n/a" );
 
             gBCR = body.getBoundingClientRect();
             $gBCRTop.text( gBCR.top );
