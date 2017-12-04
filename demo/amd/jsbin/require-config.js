@@ -1,9 +1,9 @@
 requirejs.config( {
 
     paths: {
-        'zepto': 'https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto',
+        'zepto': 'https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto',
         'underscore': 'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore',
-        'jquery.documentsize': 'https://cdn.rawgit.com/hashchange/jquery.documentsize/1.2.1/dist/amd/jquery.documentsize'
+        'jquery.documentsize': 'https://cdn.rawgit.com/hashchange/jquery.documentsize/1.2.4/dist/amd/jquery.documentsize'
     },
 
     // Faking jQuery here, using Zepto instead.
