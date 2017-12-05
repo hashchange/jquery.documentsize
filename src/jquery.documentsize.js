@@ -198,15 +198,23 @@
      * enlarged).
      *
      * The zoom factor returned here measures the size of the visual viewport with respect to the size of the layout
-     * viewport. Note that browsers usually calculate their zoom level with respect to the ideal viewport, not the
-     * layout viewport (see Peter-Paul Koch, The Mobile Web Handbook, Chapter 3: Viewports, Section "Minimum and Maximum
-     * Zoom").
-     *
-     * If the visualViewport API is supported, the calculation is skipped, and the pinch zoom factor is taken directly
-     * form visualViewport.scale.
+     * viewport.
      *
      * Ignores page zoom on the desktop (returning a zoom factor of 1). For the distinction between pinch and page zoom,
      * again see Chapter 3 in PPK's book.
+     *
+     * NB visualViewport.scale, part of the new visualViewport API, is not used here even if available. Browsers usually
+     * calculate their zoom level with respect to the ideal layout viewport, not the layout viewport actually in use
+     * (see Peter-Paul Koch, The Mobile Web Handbook, Chapter 3: Viewports, Section "Minimum and Maximum Zoom"). So, in
+     * Chrome for Android, visualViewport.scale returns that ratio, rather than the isolated effect of zooming into a
+     * part of the page.
+     *
+     * The distinction doesn't matter if the meta viewport tag makes the browser use its ideal viewport anyway
+     * (width=device-width, initial-scale=1.0). But it leads to confusing results if, for example, initial-scale is set
+     * to values < 1, or if the meta viewport tag is left out altogether. Then, the page shrinks visually _by default_,
+     * without the user zooming. The scale reported by the visualViewport API captures the effect and returns a value
+     * < 1. However, the pinch zoom factor should remain at 1 because the visual viewport is still identical to the
+     * layout viewport - never mind the diminutive size of its content.
      *
      * @param   {Window}  [_window=window]
      * @param   {Object}  [options]
@@ -216,13 +224,12 @@
     function getPinchZoomFactor ( _window, options ) {
         var ddeClientWidth, windowInnerWidth,
             asRange = options && options.asRange,
-            nativeFactor = ( _window || window ).visualViewport && ( _window || window ).visualViewport.scale,
             factors = {
-                calculated: nativeFactor || 1,
-                min: nativeFactor || 1,
-                max: nativeFactor || 1
+                calculated: 1,
+                min: 1,
+                max: 1
             },
-            skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth() || nativeFactor;
+            skip = browserScrollbarWidth() !== 0 || !supportsWindowInnerWidth();
 
         if ( !skip ) {
 
