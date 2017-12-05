@@ -1,5 +1,5 @@
-// jQuery.documentSize, v1.2.3
-// Copyright (c) 2015-2016 Michael Heim, Zeilenwechsel.de
+// jQuery.documentSize, v1.2.4
+// Copyright (c) 2015-2017 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
 
@@ -19,7 +19,7 @@
         ], factory );
 
     }
-}( this, function ( jQuery ) {
+}( this, function ( $ ) {
     "use strict";
 
     ;( function ( $ ) {
@@ -222,12 +222,23 @@
          * enlarged).
          *
          * The zoom factor returned here measures the size of the visual viewport with respect to the size of the layout
-         * viewport. Note that browsers usually calculate their zoom level with respect to the ideal viewport, not the
-         * layout viewport (see Peter-Paul Koch, The Mobile Web Handbook, Chapter 3: Viewports, Section "Minimum and Maximum
-         * Zoom").
+         * viewport.
          *
          * Ignores page zoom on the desktop (returning a zoom factor of 1). For the distinction between pinch and page zoom,
          * again see Chapter 3 in PPK's book.
+         *
+         * NB visualViewport.scale, part of the new visualViewport API, is not used here even if available. Browsers usually
+         * calculate their zoom level with respect to the ideal layout viewport, not the layout viewport actually in use
+         * (see Peter-Paul Koch, The Mobile Web Handbook, Chapter 3: Viewports, Section "Minimum and Maximum Zoom"). So, in
+         * Chrome for Android, visualViewport.scale returns that ratio, rather than the isolated effect of zooming into a
+         * part of the page.
+         *
+         * The distinction doesn't matter if the meta viewport tag makes the browser use its ideal viewport anyway
+         * (width=device-width, initial-scale=1.0). But it leads to confusing results if, for example, initial-scale is set
+         * to values < 1, or if the meta viewport tag is left out altogether. Then, the page shrinks visually _by default_,
+         * without the user zooming. The scale reported by the visualViewport API captures the effect and returns a value
+         * < 1. However, the pinch zoom factor should remain at 1 because the visual viewport is still identical to the
+         * layout viewport - never mind the diminutive size of its content.
          *
          * @param   {Window}  [_window=window]
          * @param   {Object}  [options]
@@ -366,7 +377,10 @@
         }
     
         /**
-         * Checks if the browser supports window.innerWidth and window.innerHeight.
+         * Checks if the browser supports window.visualViewport.width and window.visualViewport.height, or window.innerWidth
+         * and window.innerHeight otherwise.
+         *
+         * See getWindowInnerSize() for the distinction between the visualViewport API and window.innerWidth/Height.
          *
          * The check is run on demand, rather than up front while loading the component, because the window properties can
          * behave strangely in the early stages of opening a window. The component might be loaded in the document head,
@@ -590,7 +604,7 @@
         }
     
         /**
-         * Returns window.innerWidth.
+         * Returns window.visualViewport.width if available, or window.innerWidth otherwise.
          *
          * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
          * values).
@@ -603,7 +617,7 @@
         }
     
         /**
-         * Returns window.innerHeight.
+         * Returns window.visualViewport.height if available, or window.innerHeight otherwise.
          *
          * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
          * values).
@@ -616,17 +630,30 @@
         }
     
         /**
-         * Returns window.innerWidth or window.innerHeight, depending on the dimension argument.
+         * Returns window.visualViewport.width if available, or window.innerWidth otherwise, for width. Likewise, it
+         * returns window.visualViewport.height or window.innerHeight for height. The dimension argument determines whether
+         * width or height is returned.
          *
          * Along the way, the return value is examined to see if the browser supports sub-pixel accuracy (floating-point
          * values).
+         *
+         * If the visualViewport API is available, it is preferred over window.innerWidth/Height. That's because Chrome,
+         * from version 62, has changed the behaviour of window.innerWidth/Height, which used to return the size of the
+         * visual viewport. In Chrome, it now returns the size of the layout viewport, breaking compatibility with all other
+         * browsers and its own past behaviour. Other browsers may follow suit, though. See
+         *
+         * - https://www.quirksmode.org/blog/archives/2017/09/chrome_breaks_v.html
+         * - https://developers.google.com/web/updates/2017/09/visual-viewport-api
+         * - https://bugs.chromium.org/p/chromium/issues/detail?id=767388#c8
          *
          * @param   {string} dimension  must be "Width" or "Height" (upper case!)
          * @param   {Window} [_window=window]
          * @returns {number}
          */
         function getWindowInnerSize ( dimension, _window ) {
-            var size = ( _window || window )[ "inner" + dimension];
+            var size =  ( _window || window ).visualViewport ?
+                        ( _window || window ).visualViewport[ dimension.toLowerCase() ] :
+                        ( _window || window )[ "inner" + dimension];
     
             // Check for fractions. Exclude undefined return values in browsers which don't support window.innerWidth/Height.
             if ( size ) checkForFractions( size );
@@ -832,7 +859,7 @@
         typeof Zepto !== "undefined" ? Zepto :
         $
     ));
-    return jQuery.documentSize;
+    return $;
 
 } ));
 
