@@ -48,6 +48,10 @@ This method is a convenient by-product of the window size calculation. Call `$.p
 
 Values greater than one mean the user has zoomed in and enlarged the content. A factor of less than one stands for zooming out.
 
+In more precise terms, the pinch zoom factor captures the size of the [layout viewport][quirksmode-mobile-viewports] in relation to the current size of the [visual viewport][quirksmode-mobile-viewports]. The layout viewport is determined by the meta viewport tag and constant for a given page, while the visual viewport can be changed by the user at any time.
+
+Keep this definition in mind if you use a meta viewport tag which deviates from the common configuration of `width=device-width` and `initial-scale=1.0`. An `initial-scale` of 0.5, for example, enlarges the layout viewport to twice its usual size, giving you a zoomed-out look. Everything looks small because the browser shrinks the page visually until the entire layout viewport fits in. However, the pinch zoom factor remains at 1 unless the user actually zooms to change the default size of the page. 
+ 
 The method is all about pinch zooming and does not convey any information about page zoom in a desktop browser.
 
 As with the other methods, you can pass in a custom window: `$.pinchZoomFactor( _window )`. It is unlikely you'll ever need to do it, though.
@@ -107,7 +111,7 @@ jQuery.documentSize has been tested with
 
 - 2015, 2016, 2017 versions of Chrome, Firefox, Safari, and Opera on the desktop
 - IE8+, Edge
-- Safari on iOS 8-10; Chrome and Firefox on Android 5
+- Safari on iOS 8-11; Chrome and Firefox on Android 5
 - PhantomJS, SlimerJS
 
 ## Performance
@@ -206,6 +210,11 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release Notes
 
+### v1.2.4
+
+- Fixed breaking change in Chrome 61+ on Android (issue #5)
+- Added support, internally, for the visualViewport API
+
 ### v1.2.3
 
 - Fixed error in IE6, IE7, and other unsupported browsers which fail at test iframe creation (issue #2)
@@ -289,7 +298,7 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 
 [w3c-docsize]: http://www.w3.org/TR/CSS2/visuren.html#viewport "W3C – Visual formatting model, 9.1.1: The viewport"
 [demo-amd-zepto]: https://github.com/hashchange/jquery.documentsize/blob/master/demo/amd/require-config.js "Demo: AMD setup with Zepto"
-[demo-jsbin]: http://jsbin.com/dujuyi/2 "jQuery.documentSize demo, using Zepto (AMD) – JSBin"
+[demo-jsbin]: http://jsbin.com/dujuyi/3 "jQuery.documentSize demo, using Zepto (AMD) – JSBin"
 [demo-codepen]: http://codepen.io/hashchange/full/xGomQQ "jQuery.documentSize demo, using Zepto (AMD) – Codepen"
 
 [data-provider.js]: https://github.com/hashchange/jquery.documentsize/blob/master/spec/helpers/data-provider.js "Source code of data-provider.js"
