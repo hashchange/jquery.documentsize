@@ -63,10 +63,18 @@ dd {
     float: right;
 }
 
+.dimensions {
+    /*display: none;*/
+}
+
 .gBCR {
     display: none;
 }
 
 .nativeZoom {
+    display: none;
+}
+
+.scrollPosition {
     display: none;
 }

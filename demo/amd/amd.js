@@ -30,6 +30,16 @@ require( [
             $gBCRBottom = $( ".gBCR .bottom" ),
             $gBCRRight = $( ".gBCR ._right" ),
 
+            $scrollTop = $( ".scroll .top" ),
+            $scrollLeft = $( ".scroll ._left" ),
+            $scrollY = $( ".scroll .y" ),
+            $scrollX = $( ".scroll .x" ),
+
+            $visualViewportPageTop = $( ".visualViewportApi .pageTop" ),
+            $visualViewportPageLeft = $( ".visualViewportApi .pageLeft" ),
+            $visualViewportOffsetTop = $( ".visualViewportApi .offsetTop" ),
+            $visualViewportOffsetLeft = $( ".visualViewportApi .offsetLeft" ),
+
             $logPane = $( ".log" ),
             initialLogProps = {
                 top: parseFloat( $logPane.css( "top" ) ),
@@ -136,8 +146,17 @@ require( [
 
         function logValues () {
 
-            var zoomFactor, nativeZoomFactor, gBCR,
-                supportsVisualViewportAPI = !!window.visualViewport;
+            var zoomFactor, gBCR,
+                supportsVisualViewportAPI = !!window.visualViewport,
+
+                // Simplified method for getting the element which scrolls the document. Based in part on MDN:
+                // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
+                //
+                // For a truly bulletproof way to determine the scrollable element, based on feature testing, use
+                // jquery.scrollable and call $window.scrollable(), or extract the method from its source.
+                isCSS1Compat = ( ( document.compatMode || "" ) === "CSS1Compat" ),
+                scrollableElement = document.scrollingElement || ( isCSS1Compat ? document.documentElement : document.body );
+
 
             $documentHeight.text( $.documentHeight() );
             $documentWidth.text( $.documentWidth() );
@@ -152,16 +171,25 @@ require( [
             $layoutViewportWidth.text( $.windowWidth( { viewport: "layout" } ) );
 
             zoomFactor = $.pinchZoomFactor();
-            $pinchZoomFactor.text( Math.round( zoomFactor * 10000 ) / 10000 );
+            $pinchZoomFactor.text( round( zoomFactor, 4 ) );
 
-            nativeZoomFactor = supportsVisualViewportAPI && window.visualViewport.scale;
-            $nativePinchZoomFactor.text( supportsVisualViewportAPI ? Math.round( nativeZoomFactor * 10000 ) / 10000 : "n/a" );
+            $nativePinchZoomFactor.text( supportsVisualViewportAPI ? round( window.visualViewport.scale, 4 ) : "n/a" );
 
             gBCR = body.getBoundingClientRect();
             $gBCRTop.text( gBCR.top );
             $gBCRLeft.text( gBCR.left );
             $gBCRBottom.text( gBCR.bottom );
             $gBCRRight.text( gBCR.right );
+
+            $scrollTop.text( round( scrollableElement.scrollTop, 2 ) );
+            $scrollLeft.text( round( scrollableElement.scrollLeft, 2 ) );
+            $scrollY.text( round( window.scrollY, 2 ) );
+            $scrollX.text( round( window.scrollX, 2 ) );
+
+            $visualViewportPageTop.text( supportsVisualViewportAPI ? round( window.visualViewport.pageTop, 2 ) : "n/a" );
+            $visualViewportPageLeft.text( supportsVisualViewportAPI ? round( window.visualViewport.pageLeft, 2 ) : "n/a" );
+            $visualViewportOffsetTop.text( supportsVisualViewportAPI ? round( window.visualViewport.offsetTop, 2 ) : "n/a" );
+            $visualViewportOffsetLeft.text( supportsVisualViewportAPI ? round( window.visualViewport.offsetLeft, 2 ) : "n/a" );
 
         }
 
@@ -187,6 +215,11 @@ require( [
                 $logPane.show();
                 update();
             }, 2000 );
+        }
+
+        function round ( num, decimals ) {
+            var multiplier = Math.pow( 10, decimals || 0 );
+            return Math.round( num * multiplier ) / multiplier;
         }
 
     } );
