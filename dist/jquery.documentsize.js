@@ -1,5 +1,5 @@
-// jQuery.documentSize, v1.2.4
-// Copyright (c) 2015-2017 Michael Heim, Zeilenwechsel.de
+// jQuery.documentSize, v1.2.5
+// Copyright (c) 2015-2018 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/jquery.documentsize
 
