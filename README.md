@@ -272,7 +272,7 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 MIT.
 
-Copyright (c) 2015-2024 Michael Heim.
+Copyright (c) 2015-2025 Michael Heim.
 
 Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [See file][data-provider.js].
 
